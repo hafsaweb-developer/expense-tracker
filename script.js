@@ -19,7 +19,10 @@ const darkModeToggle = document.getElementById("darkModeToggle");
 
 /* LOAD SAVED TRANSACTIONS */
 let transactions = [];
-
+/* LOAD SAVED MONTHLY BUDGET */
+let monthlyBudget = Number(
+    localStorage.getItem("expenseTrackerMonthlyBudget")
+) || 0;
 try {
     transactions = JSON.parse(
         localStorage.getItem("expenseTrackerTransactions")
