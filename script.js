@@ -10,15 +10,59 @@ const incomeDisplay = document.getElementById("income");
 const expensesDisplay = document.getElementById("expenses");
 const transactionList = document.getElementById("transactionList");
 
-// Load saved transactions
+// DARK MODE
+const darkModeToggle = document.getElementById("darkModeToggle");
+
+// Restore the saved theme
+const savedTheme = localStorage.getItem("expenseTrackerTheme");
+
+if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+}
+
+updateDarkModeButton();
+
+// Switch between light and dark mode
+darkModeToggle.addEventListener("click", function () {
+    document.body.classList.toggle("dark-mode");
+
+    const isDarkMode = document.body.classList.contains("dark-mode");
+
+    localStorage.setItem(
+        "expenseTrackerTheme",
+        isDarkMode ? "dark" : "light"
+    );
+
+    updateDarkModeButton();
+});
+
+// Update the button text
+function updateDarkModeButton() {
+    if (document.body.classList.contains("dark-mode")) {
+        darkModeToggle.textContent = "☀️ Light Mode";
+    } else {
+        darkModeToggle.textContent = "🌙 Dark Mode";
+    }
+}
+
+// LOAD SAVED TRANSACTIONS
 let transactions = JSON.parse(
     localStorage.getItem("expenseTrackerTransactions")
 ) || [];
 
-// Set today's date automatically
-dateInput.value = new Date().toLocaleDateString("en-CA");
+// Set today's date using the local calendar date
+function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
-// Format money in Kenyan shillings
+    return `${year}-${month}-${day}`;
+}
+
+dateInput.value = getTodayDate();
+
+// Format Kenyan shillings
 function formatMoney(amount) {
     return "KSh " + amount.toLocaleString("en-KE", {
         minimumFractionDigits: 2,
@@ -26,7 +70,7 @@ function formatMoney(amount) {
     });
 }
 
-// Save transactions in the browser
+// Save transactions
 function saveTransactions() {
     localStorage.setItem(
         "expenseTrackerTransactions",
@@ -56,8 +100,12 @@ function displayTransactions() {
     transactionList.innerHTML = "";
 
     if (transactions.length === 0) {
-        transactionList.innerHTML =
-            '<p class="empty-message">No transactions yet. Add your first one!</p>';
+        const emptyMessage = document.createElement("p");
+        emptyMessage.className = "empty-message";
+        emptyMessage.textContent =
+            "No transactions yet. Add your first one!";
+
+        transactionList.appendChild(emptyMessage);
         return;
     }
 
@@ -85,7 +133,9 @@ function displayTransactions() {
 
         const amount = document.createElement("p");
         amount.className = "transaction-amount " +
-            (transaction.type === "income" ? "income-text" : "expense-text");
+            (transaction.type === "income"
+                ? "income-text"
+                : "expense-text");
 
         amount.textContent =
             (transaction.type === "income" ? "+ " : "- ") +
@@ -97,7 +147,8 @@ function displayTransactions() {
 
         deleteButton.addEventListener("click", function () {
             transactions = transactions.filter(
-                item => item.id !== transaction.id
+                savedTransaction =>
+                    savedTransaction.id !== transaction.id
             );
 
             saveTransactions();
@@ -115,7 +166,7 @@ function displayTransactions() {
     });
 }
 
-// Add a new transaction
+// Add a transaction
 transactionForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -124,13 +175,19 @@ transactionForm.addEventListener("submit", function (event) {
     const type = typeInput.value;
     const date = dateInput.value;
 
-    if (!description || !Number.isFinite(amount) || amount <= 0 || !date) {
+    if (
+        !description ||
+        !Number.isFinite(amount) ||
+        amount <= 0 ||
+        !date
+    ) {
         alert("Please enter a description, a valid amount, and a date.");
         return;
     }
 
     const transaction = {
-        id: Date.now().toString() + Math.random().toString(16).slice(2),
+        id: Date.now().toString() +
+            Math.random().toString(16).slice(2),
         description: description,
         amount: amount,
         type: type,
@@ -144,9 +201,9 @@ transactionForm.addEventListener("submit", function (event) {
     displayTransactions();
 
     transactionForm.reset();
-    dateInput.value = new Date().toLocaleDateString("en-CA");
+    dateInput.value = getTodayDate();
 });
 
-// Show saved transactions when the page opens
+// Display saved information on page load
 updateSummary();
 displayTransactions();
