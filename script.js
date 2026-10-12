@@ -1,5 +1,5 @@
 
-const transactionForm = document.getElementById("transactionForm");
+const form = document.getElementById("transactionForm");
 const descriptionInput = document.getElementById("description");
 const amountInput = document.getElementById("amount");
 const typeInput = document.getElementById("type");
@@ -9,48 +9,38 @@ const balanceDisplay = document.getElementById("balance");
 const incomeDisplay = document.getElementById("income");
 const expensesDisplay = document.getElementById("expenses");
 const transactionList = document.getElementById("transactionList");
-
-// DARK MODE
 const darkModeToggle = document.getElementById("darkModeToggle");
 
-// Restore the saved theme
-const savedTheme = localStorage.getItem("expenseTrackerTheme");
+const TRANSACTIONS_KEY = "expenseTrackerTransactions";
+const THEME_KEY = "expenseTrackerTheme";
 
-if (savedTheme === "dark") {
-    document.body.classList.add("dark-mode");
-}
+let transactions = [];
 
-updateDarkModeButton();
-
-// Switch between light and dark mode
-darkModeToggle.addEventListener("click", function () {
-    document.body.classList.toggle("dark-mode");
-
-    const isDarkMode = document.body.classList.contains("dark-mode");
-
-    localStorage.setItem(
-        "expenseTrackerTheme",
-        isDarkMode ? "dark" : "light"
+try {
+    const savedTransactions = JSON.parse(
+        localStorage.getItem(TRANSACTIONS_KEY) || "[]"
     );
 
-    updateDarkModeButton();
-});
-
-// Update the button text
-function updateDarkModeButton() {
-    if (document.body.classList.contains("dark-mode")) {
-        darkModeToggle.textContent = "☀️ Light Mode";
-    } else {
-        darkModeToggle.textContent = "🌙 Dark Mode";
+    if (Array.isArray(savedTransactions)) {
+        transactions = savedTransactions.filter(transaction =>
+            transaction &&
+            typeof transaction.description === "string" &&
+            Number.isFinite(Number(transaction.amount)) &&
+            Number(transaction.amount) > 0 &&
+            ["income", "expense"].includes(transaction.type) &&
+            typeof transaction.date === "string"
+        ).map(transaction => ({
+            ...transaction,
+            amount: Number(transaction.amount),
+            id: transaction.id || (
+                Date.now().toString() + Math.random().toString(16).slice(2)
+            )
+        }));
     }
+} catch (error) {
+    console.error("Could not load saved transactions:", error);
 }
 
-// LOAD SAVED TRANSACTIONS
-let transactions = JSON.parse(
-    localStorage.getItem("expenseTrackerTransactions")
-) || [];
-
-// Set today's date using the local calendar date
 function getTodayDate() {
     const today = new Date();
     const year = today.getFullYear();
@@ -60,9 +50,6 @@ function getTodayDate() {
     return `${year}-${month}-${day}`;
 }
 
-dateInput.value = getTodayDate();
-
-// Format Kenyan shillings
 function formatMoney(amount) {
     return "KSh " + amount.toLocaleString("en-KE", {
         minimumFractionDigits: 2,
@@ -70,15 +57,54 @@ function formatMoney(amount) {
     });
 }
 
-// Save transactions
 function saveTransactions() {
-    localStorage.setItem(
-        "expenseTrackerTransactions",
-        JSON.stringify(transactions)
-    );
+    try {
+        localStorage.setItem(
+            TRANSACTIONS_KEY,
+            JSON.stringify(transactions)
+        );
+    } catch (error) {
+        alert("Your browser could not save the transactions.");
+        console.error(error);
+    }
 }
 
-// Update the summary cards
+/* DARK MODE */
+function updateThemeButton() {
+    const isDark = document.body.classList.contains("dark-mode");
+
+    darkModeToggle.textContent = isDark
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+
+    darkModeToggle.setAttribute("aria-pressed", String(isDark));
+}
+
+try {
+    if (localStorage.getItem(THEME_KEY) === "dark") {
+        document.body.classList.add("dark-mode");
+    }
+} catch (error) {
+    console.error("Could not load saved theme:", error);
+}
+
+updateThemeButton();
+
+darkModeToggle.addEventListener("click", function () {
+    document.body.classList.toggle("dark-mode");
+
+    const isDark = document.body.classList.contains("dark-mode");
+
+    try {
+        localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
+    } catch (error) {
+        console.error("Could not save theme:", error);
+    }
+
+    updateThemeButton();
+});
+
+/* SUMMARY CARDS */
 function updateSummary() {
     const totalIncome = transactions
         .filter(transaction => transaction.type === "income")
@@ -88,24 +114,20 @@ function updateSummary() {
         .filter(transaction => transaction.type === "expense")
         .reduce((total, transaction) => total + transaction.amount, 0);
 
-    const balance = totalIncome - totalExpenses;
-
-    balanceDisplay.textContent = formatMoney(balance);
+    balanceDisplay.textContent = formatMoney(totalIncome - totalExpenses);
     incomeDisplay.textContent = formatMoney(totalIncome);
     expensesDisplay.textContent = formatMoney(totalExpenses);
 }
 
-// Display transactions
+/* TRANSACTION LIST */
 function displayTransactions() {
-    transactionList.innerHTML = "";
+    transactionList.replaceChildren();
 
     if (transactions.length === 0) {
-        const emptyMessage = document.createElement("p");
-        emptyMessage.className = "empty-message";
-        emptyMessage.textContent =
-            "No transactions yet. Add your first one!";
-
-        transactionList.appendChild(emptyMessage);
+        const message = document.createElement("p");
+        message.className = "empty-message";
+        message.textContent = "No transactions yet. Add your first one!";
+        transactionList.appendChild(message);
         return;
     }
 
@@ -126,29 +148,27 @@ function displayTransactions() {
         const date = document.createElement("p");
         date.textContent = transaction.date;
 
-        info.appendChild(title);
-        info.appendChild(date);
+        info.append(title, date);
 
         const details = document.createElement("div");
 
         const amount = document.createElement("p");
+        const isIncome = transaction.type === "income";
+
         amount.className = "transaction-amount " +
-            (transaction.type === "income"
-                ? "income-text"
-                : "expense-text");
+            (isIncome ? "income-text" : "expense-text");
 
         amount.textContent =
-            (transaction.type === "income" ? "+ " : "- ") +
-            formatMoney(transaction.amount);
+            (isIncome ? "+ " : "- ") + formatMoney(transaction.amount);
 
         const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
         deleteButton.className = "delete-button";
         deleteButton.textContent = "Delete";
 
         deleteButton.addEventListener("click", function () {
             transactions = transactions.filter(
-                savedTransaction =>
-                    savedTransaction.id !== transaction.id
+                saved => saved.id !== transaction.id
             );
 
             saveTransactions();
@@ -156,18 +176,14 @@ function displayTransactions() {
             displayTransactions();
         });
 
-        details.appendChild(amount);
-        details.appendChild(deleteButton);
-
-        item.appendChild(info);
-        item.appendChild(details);
-
+        details.append(amount, deleteButton);
+        item.append(info, details);
         transactionList.appendChild(item);
     });
 }
 
-// Add a transaction
-transactionForm.addEventListener("submit", function (event) {
+/* ADD TRANSACTION */
+form.addEventListener("submit", function (event) {
     event.preventDefault();
 
     const description = descriptionInput.value.trim();
@@ -175,35 +191,28 @@ transactionForm.addEventListener("submit", function (event) {
     const type = typeInput.value;
     const date = dateInput.value;
 
-    if (
-        !description ||
-        !Number.isFinite(amount) ||
-        amount <= 0 ||
-        !date
-    ) {
+    if (!description || !Number.isFinite(amount) || amount <= 0 || !date) {
         alert("Please enter a description, a valid amount, and a date.");
         return;
     }
 
-    const transaction = {
-        id: Date.now().toString() +
-            Math.random().toString(16).slice(2),
-        description: description,
-        amount: amount,
-        type: type,
-        date: date
-    };
-
-    transactions.push(transaction);
+    transactions.push({
+        id: Date.now().toString() + Math.random().toString(16).slice(2),
+        description,
+        amount,
+        type,
+        date
+    });
 
     saveTransactions();
     updateSummary();
     displayTransactions();
 
-    transactionForm.reset();
+    form.reset();
     dateInput.value = getTodayDate();
 });
 
-// Display saved information on page load
+/* INITIAL PAGE SETUP */
+dateInput.value = getTodayDate();
 updateSummary();
 displayTransactions();
