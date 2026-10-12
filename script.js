@@ -73,7 +73,7 @@ function updateSummary() {
     incomeDisplay.textContent = formatMoney(income);
     expensesDisplay.textContent = formatMoney(expenses);
 }
-
+updateBudget();
 /* DISPLAY TRANSACTIONS */
 function displayTransactions() {
     transactionList.innerHTML = "";
