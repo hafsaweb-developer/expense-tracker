@@ -103,6 +103,33 @@
         </section>
 
         <section class="section">
+            
+<!-- SEARCH AND FILTER TRANSACTIONS -->
+<div class="transaction-filters">
+    <input
+        type="text"
+        id="searchTransactions"
+        placeholder="Search transactions..."
+    >
+
+    <select id="filterType">
+        <option value="all">All Transactions</option>
+        <option value="income">Income Only</option>
+        <option value="expense">Expenses Only</option>
+    </select>
+
+    <select id="filterCategory">
+        <option value="all">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Transport">Transport</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Bills">Bills</option>
+        <option value="Health">Health</option>
+        <option value="Education">Education</option>
+        <option value="Other">Other</option>
+    </select>
+</div>
+
             <h2>Recent Transactions</h2>
             <div id="transactionList">
                 <p class="empty-message">
