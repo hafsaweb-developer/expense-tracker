@@ -1,5 +1,6 @@
 
 const form = document.getElementById("transactionForm");
+const categoryInput = document.getElementById("category");
 const descriptionInput = document.getElementById("description");
 const amountInput = document.getElementById("amount");
 const typeInput = document.getElementById("type");
