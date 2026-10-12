@@ -522,3 +522,21 @@ updateSummary = function () {
 };
 
 drawExpenseChart();
+
+/* SEARCH AND FILTER TRANSACTIONS */
+
+const transactionSearchInput = document.getElementById("searchTransactions");
+const transactionTypeFilter = document.getElementById("filterType");
+const transactionCategoryFilter = document.getElementById("filterCategory");
+
+if (transactionSearchInput) {
+    transactionSearchInput.addEventListener("input", displayTransactions);
+}
+
+if (transactionTypeFilter) {
+    transactionTypeFilter.addEventListener("change", displayTransactions);
+}
+
+if (transactionCategoryFilter) {
+    transactionCategoryFilter.addEventListener("change", displayTransactions);
+}
