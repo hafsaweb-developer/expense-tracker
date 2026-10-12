@@ -74,6 +74,48 @@ function updateSummary() {
     expensesDisplay.textContent = formatMoney(expenses);
 }
 updateBudget();
+/* UPDATE MONTHLY BUDGET */
+function updateBudget() {
+    const currentMonth = getTodayDate().slice(0, 7);
+
+    const monthlyExpenses = transactions
+        .filter(transaction =>
+            transaction.type === "expense" &&
+            transaction.date &&
+            transaction.date.slice(0, 7) === currentMonth
+        )
+        .reduce((total, transaction) => total + Number(transaction.amount), 0);
+
+    if (monthlyBudget <= 0) {
+        budgetStatus.textContent = "No budget set yet";
+        budgetProgressBar.style.width = "0%";
+        budgetMessage.textContent =
+            "Enter your monthly budget to track your spending.";
+        return;
+    }
+
+    const percentage = (monthlyExpenses / monthlyBudget) * 100;
+    const displayedPercentage = Math.min(percentage, 100);
+
+    budgetStatus.textContent =
+        `${formatMoney(monthlyExpenses)} spent of ${formatMoney(monthlyBudget)}`;
+
+    budgetProgressBar.style.width = displayedPercentage + "%";
+
+    if (percentage >= 100) {
+        budgetProgressBar.style.backgroundColor = "#dc2626";
+        budgetMessage.textContent =
+            `Budget exceeded by ${formatMoney(monthlyExpenses - monthlyBudget)}.`;
+    } else if (percentage >= 80) {
+        budgetProgressBar.style.backgroundColor = "#f59e0b";
+        budgetMessage.textContent =
+            `${percentage.toFixed(1)}% used. You're getting close to your limit!`;
+    } else {
+        budgetProgressBar.style.backgroundColor = "#7c3aed";
+        budgetMessage.textContent =
+            `${percentage.toFixed(1)}% used. ${formatMoney(monthlyBudget - monthlyExpenses)} remaining.`;
+    }
+}
 /* DISPLAY TRANSACTIONS */
 function displayTransactions() {
     transactionList.innerHTML = "";
