@@ -1,6 +1,11 @@
 
 /* CONNECT HTML ELEMENTS */
 const form = document.getElementById("transactionForm");
+const budgetForm = document.getElementById("budgetForm");
+const monthlyBudgetInput = document.getElementById("monthlyBudget");
+const budgetStatus = document.getElementById("budgetStatus");
+const budgetProgressBar = document.getElementById("budgetProgressBar");
+const budgetMessage = document.getElementById("budgetMessage");
 const categoryInput = document.getElementById("category");
 const descriptionInput = document.getElementById("description");
 const amountInput = document.getElementById("amount");
