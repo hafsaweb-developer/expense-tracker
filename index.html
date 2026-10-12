@@ -7,12 +7,17 @@
     <title>My Expense Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
 
         <header>
             <h1>My Expense Tracker</h1>
             <p>Manage your money, reach your goals.</p>
+
+            <button type="button" id="darkModeToggle">
+                🌙 Dark Mode
+            </button>
         </header>
 
         <section class="summary">
@@ -75,11 +80,14 @@
             <h2>Recent Transactions</h2>
 
             <div id="transactionList">
-                <p class="empty-message">No transactions yet. Add your first one!</p>
+                <p class="empty-message">
+                    No transactions yet. Add your first one!
+                </p>
             </div>
         </section>
 
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
