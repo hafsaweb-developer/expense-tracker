@@ -248,3 +248,88 @@ body.dark-mode .delete-button:hover {
         flex-wrap: wrap;
     }
 }
+/* MONTHLY BUDGET */
+.budget-section > p {
+    color: #6b7280;
+    margin: 10px 0 20px;
+}
+
+#budgetForm {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+#budgetForm label {
+    font-weight: bold;
+}
+
+#monthlyBudget {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+#budgetForm button {
+    padding: 12px 18px;
+    background: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#budgetForm button:hover {
+    background: #6d28d9;
+}
+
+.budget-progress {
+    margin-top: 20px;
+}
+
+#budgetStatus {
+    margin: 10px 0;
+    font-size: 20px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 18px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #7c3aed;
+    border-radius: 20px;
+    transition: width 0.3s ease;
+}
+
+#budgetMessage {
+    color: #6b7280;
+    margin-top: 10px;
+}
+
+/* DARK MODE BUDGET STYLES */
+body.dark-mode .budget-section > p,
+body.dark-mode #budgetMessage {
+    color: #d1d5db;
+}
+
+body.dark-mode #monthlyBudget {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+body.dark-mode .progress-track {
+    background: #374151;
+}
