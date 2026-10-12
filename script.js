@@ -1,4 +1,8 @@
 
+/* ========================================
+   EXPENSE TRACKER - COMPLETE JAVASCRIPT
+======================================== */
+
 /* CONNECT HTML ELEMENTS */
 const form = document.getElementById("transactionForm");
 const budgetForm = document.getElementById("budgetForm");
@@ -6,38 +10,41 @@ const monthlyBudgetInput = document.getElementById("monthlyBudget");
 const budgetStatus = document.getElementById("budgetStatus");
 const budgetProgressBar = document.getElementById("budgetProgressBar");
 const budgetMessage = document.getElementById("budgetMessage");
+
 const categoryInput = document.getElementById("category");
 const descriptionInput = document.getElementById("description");
 const amountInput = document.getElementById("amount");
 const typeInput = document.getElementById("type");
 const dateInput = document.getElementById("date");
+
 const transactionList = document.getElementById("transactionList");
 const balanceDisplay = document.getElementById("balance");
 const incomeDisplay = document.getElementById("income");
 const expensesDisplay = document.getElementById("expenses");
 const darkModeToggle = document.getElementById("darkModeToggle");
+const downloadReportButton = document.getElementById("downloadReport");
+
 
 /* LOAD SAVED TRANSACTIONS */
 let transactions = [];
-/* LOAD SAVED MONTHLY BUDGET */
-let monthlyBudget = Number(
-    localStorage.getItem("expenseTrackerMonthlyBudget")
-) || 0;
+
 try {
-    transactions = JSON.parse(
+    const savedTransactions = JSON.parse(
         localStorage.getItem("expenseTrackerTransactions")
-    ) || [];
+    );
+
+    if (Array.isArray(savedTransactions)) {
+        transactions = savedTransactions;
+    }
 } catch (error) {
     transactions = [];
 }
 
-/* CURRENCY FORMAT */
-function formatMoney(amount) {
-    return "KSh " + Number(amount).toLocaleString("en-KE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
+
+/* LOAD SAVED MONTHLY BUDGET */
+let monthlyBudget =
+    Number(localStorage.getItem("expenseTrackerMonthlyBudget")) || 0;
+
 
 /* GET TODAY'S DATE */
 function getTodayDate() {
@@ -49,6 +56,18 @@ function getTodayDate() {
     return `${year}-${month}-${day}`;
 }
 
+
+/* FORMAT MONEY IN KENYAN SHILLINGS */
+function formatMoney(amount) {
+    return new Intl.NumberFormat("en-KE", {
+        style: "currency",
+        currency: "KES",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(Number(amount) || 0);
+}
+
+
 /* SAVE TRANSACTIONS */
 function saveTransactions() {
     localStorage.setItem(
@@ -57,26 +76,95 @@ function saveTransactions() {
     );
 }
 
-/* UPDATE SUMMARY CARDS */
+
+/* ADD A NEW TRANSACTION */
+if (form) {
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const description = descriptionInput.value.trim();
+        const amount = Number(amountInput.value);
+        const type = typeInput.value;
+        const category = categoryInput ? categoryInput.value : "Other";
+        const date = dateInput.value || getTodayDate();
+
+        if (!description) {
+            alert("Please enter a description.");
+            return;
+        }
+
+        if (!Number.isFinite(amount) || amount <= 0) {
+            alert("Please enter an amount greater than zero.");
+            return;
+        }
+
+        if (type !== "income" && type !== "expense") {
+            alert("Please select income or expense.");
+            return;
+        }
+
+        const transaction = {
+            id: Date.now().toString() + Math.random().toString(16).slice(2),
+            description: description,
+            amount: amount,
+            type: type,
+            category: category,
+            date: date
+        };
+
+        transactions.push(transaction);
+
+        saveTransactions();
+        displayTransactions();
+        updateSummary();
+
+        form.reset();
+
+        if (dateInput) {
+            dateInput.value = getTodayDate();
+        }
+    });
+}
+
+
+/* UPDATE BALANCE, INCOME AND EXPENSES */
 function updateSummary() {
     const income = transactions
         .filter(transaction => transaction.type === "income")
-        .reduce((total, transaction) => total + Number(transaction.amount), 0);
+        .reduce((total, transaction) => {
+            return total + Number(transaction.amount);
+        }, 0);
 
     const expenses = transactions
         .filter(transaction => transaction.type === "expense")
-        .reduce((total, transaction) => total + Number(transaction.amount), 0);
+        .reduce((total, transaction) => {
+            return total + Number(transaction.amount);
+        }, 0);
 
     const balance = income - expenses;
 
-    balanceDisplay.textContent = formatMoney(balance);
-    incomeDisplay.textContent = formatMoney(income);
-    expensesDisplay.textContent = formatMoney(expenses);
+    if (balanceDisplay) {
+        balanceDisplay.textContent = formatMoney(balance);
+    }
+
+    if (incomeDisplay) {
+        incomeDisplay.textContent = formatMoney(income);
+    }
+
+    if (expensesDisplay) {
+        expensesDisplay.textContent = formatMoney(expenses);
+    }
+
+    updateBudget();
 }
-updateBudget();
+
 
 /* UPDATE MONTHLY BUDGET */
 function updateBudget() {
+    if (!budgetStatus || !budgetProgressBar || !budgetMessage) {
+        return;
+    }
+
     const currentMonth = getTodayDate().slice(0, 7);
 
     const monthlyExpenses = transactions
@@ -85,11 +173,14 @@ function updateBudget() {
             transaction.date &&
             transaction.date.slice(0, 7) === currentMonth
         )
-        .reduce((total, transaction) => total + Number(transaction.amount), 0);
+        .reduce((total, transaction) => {
+            return total + Number(transaction.amount);
+        }, 0);
 
     if (monthlyBudget <= 0) {
         budgetStatus.textContent = "No budget set yet";
         budgetProgressBar.style.width = "0%";
+        budgetProgressBar.style.backgroundColor = "#7c3aed";
         budgetMessage.textContent =
             "Enter your monthly budget to track your spending.";
         return;
@@ -118,175 +209,210 @@ function updateBudget() {
     }
 }
 
+
 /* SAVE MONTHLY BUDGET */
-budgetForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+if (budgetForm) {
+    budgetForm.addEventListener("submit", function (event) {
+        event.preventDefault();
 
-    const enteredBudget = Number(monthlyBudgetInput.value);
+        const enteredBudget = Number(monthlyBudgetInput.value);
 
-    if (!Number.isFinite(enteredBudget) || enteredBudget <= 0) {
-        alert("Please enter a valid budget greater than zero.");
-        return;
-    }
+        if (!Number.isFinite(enteredBudget) || enteredBudget <= 0) {
+            alert("Please enter a valid budget greater than zero.");
+            return;
+        }
 
-    monthlyBudget = enteredBudget;
+        monthlyBudget = enteredBudget;
 
-    localStorage.setItem("expenseTrackerMonthlyBudget", monthlyBudget);
+        localStorage.setItem(
+            "expenseTrackerMonthlyBudget",
+            monthlyBudget
+        );
 
-    updateBudget();
+        updateBudget();
 
-    alert("Monthly budget saved successfully!");
-});
+        alert("Monthly budget saved successfully!");
+    });
+}
+
 
 /* DISPLAY TRANSACTIONS */
 function displayTransactions() {
-    transactionList.innerHTML = "";
-
-    if (transactions.length === 0) {
-        transactionList.innerHTML =
-            '<p class="empty-message">No transactions yet. Add your first one!</p>';
+    if (!transactionList) {
         return;
     }
 
-    const sortedTransactions = [...transactions].sort(
-        (a, b) => new Date(b.date) - new Date(a.date)
-    );
+    transactionList.innerHTML = "";
 
-    sortedTransactions.forEach(transaction => {
+    if (transactions.length === 0) {
+        const emptyMessage = document.createElement("p");
+        emptyMessage.className = "empty-message";
+        emptyMessage.textContent =
+            "No transactions yet. Add your first one!";
+
+        transactionList.appendChild(emptyMessage);
+        return;
+    }
+
+    const sortedTransactions = [...transactions].sort((a, b) => {
+        const dateDifference = (b.date || "").localeCompare(a.date || "");
+
+        if (dateDifference !== 0) {
+            return dateDifference;
+        }
+
+        return Number(b.id) - Number(a.id);
+    });
+
+    sortedTransactions.forEach(function (transaction) {
         const item = document.createElement("div");
-        item.className = "transaction";
+        item.className = "transaction-item";
 
-        const info = document.createElement("div");
-        info.className = "transaction-info";
+        const details = document.createElement("div");
+        details.className = "transaction-details";
 
-        const description = document.createElement("h3");
-        description.textContent = transaction.description;
+        const title = document.createElement("h3");
+        title.textContent = transaction.description;
 
-        const details = document.createElement("p");
+        const info = document.createElement("p");
 
-        const categoryNames = {
-            food: "Food",
-            transport: "Transport",
-            rent: "Rent",
-            shopping: "Shopping",
-            bills: "Bills",
-            salary: "Salary",
-            business: "Business",
-            other: "Other"
-        };
+        const category = transaction.category || "Uncategorized";
+        const date = transaction.date || "";
 
-        const category = categoryNames[transaction.category] ||
-            transaction.category ||
-            "Uncategorized";
+        info.textContent = `${category} • ${date}`;
 
-        details.textContent = `${transaction.date} • ${category}`;
-
-        info.appendChild(description);
-        info.appendChild(details);
-
-        const rightSide = document.createElement("div");
-        rightSide.className = "transaction-actions";
-
-        const amount = document.createElement("span");
+        const amount = document.createElement("p");
         amount.className = transaction.type === "income"
-            ? "transaction-income"
-            : "transaction-expense";
+            ? "income"
+            : "expense";
 
-        const sign = transaction.type === "income" ? "+ " : "- ";
-        amount.textContent = sign + formatMoney(transaction.amount);
+        const sign = transaction.type === "income" ? "+" : "-";
+        amount.textContent = `${sign}${formatMoney(transaction.amount)}`;
 
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
-        deleteButton.className = "delete-button";
         deleteButton.textContent = "Delete";
+        deleteButton.className = "delete-button";
 
         deleteButton.addEventListener("click", function () {
             const confirmed = confirm(
                 "Are you sure you want to delete this transaction?"
             );
 
-            if (!confirmed) return;
+            if (!confirmed) {
+                return;
+            }
 
-            transactions = transactions.filter(
-                savedTransaction => savedTransaction.id !== transaction.id
+            transactions = transactions.filter(item =>
+                String(item.id) !== String(transaction.id)
             );
 
             saveTransactions();
-            updateSummary();
             displayTransactions();
+            updateSummary();
         });
 
-        rightSide.appendChild(amount);
-        rightSide.appendChild(deleteButton);
+        details.appendChild(title);
+        details.appendChild(info);
 
-        item.appendChild(info);
-        item.appendChild(rightSide);
+        item.appendChild(details);
+        item.appendChild(amount);
+        item.appendChild(deleteButton);
 
         transactionList.appendChild(item);
     });
 }
 
-/* ADD A TRANSACTION */
-form.addEventListener("submit", function (event) {
-    event.preventDefault();
 
-    const description = descriptionInput.value.trim();
-    const amount = Number(amountInput.value);
-    const type = typeInput.value;
-    const category = categoryInput.value;
-    const date = dateInput.value;
+/* DOWNLOAD TRANSACTIONS REPORT */
+if (downloadReportButton) {
+    downloadReportButton.addEventListener("click", function () {
+        if (transactions.length === 0) {
+            alert("There are no transactions to download yet.");
+            return;
+        }
 
-    if (
-        !description ||
-        !Number.isFinite(amount) ||
-        amount <= 0 ||
-        !date ||
-        !category
-    ) {
-        alert("Please enter a description, valid amount, category, and date.");
-        return;
-    }
+        const headings = [
+            "Description",
+            "Amount (KSh)",
+            "Type",
+            "Category",
+            "Date"
+        ];
 
-    const transaction = {
-        id: Date.now().toString() + Math.random().toString(16).slice(2),
-        description,
-        amount,
-        type,
-        category,
-        date
-    };
+        function escapeCSV(value) {
+            return '"' +
+                String(value ?? "").replace(/"/g, '""') +
+                '"';
+        }
 
-    transactions.push(transaction);
+        const rows = transactions.map(function (transaction) {
+            return [
+                transaction.description,
+                transaction.amount,
+                transaction.type,
+                transaction.category || "Uncategorized",
+                transaction.date || ""
+            ];
+        });
 
-    saveTransactions();
-    updateSummary();
-    displayTransactions();
+        const csvContent = [
+            headings.map(escapeCSV).join(","),
+            ...rows.map(row => row.map(escapeCSV).join(","))
+        ].join("\r\n");
 
-    form.reset();
-    dateInput.value = getTodayDate();
-});
+        const file = new Blob(
+            ["\uFEFF" + csvContent],
+            { type: "text/csv;charset=utf-8;" }
+        );
+
+        const url = URL.createObjectURL(file);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "expense-tracker-report.csv";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+    });
+}
+
 
 /* DARK MODE */
 if (darkModeToggle) {
+    const savedDarkMode =
+        localStorage.getItem("expenseTrackerDarkMode");
+
+    if (savedDarkMode === "enabled") {
+        document.body.classList.add("dark-mode");
+        darkModeToggle.textContent = "☀️ Light Mode";
+    }
+
     darkModeToggle.addEventListener("click", function () {
         document.body.classList.toggle("dark-mode");
 
-        const isDarkMode = document.body.classList.contains("dark-mode");
+        const isDarkMode =
+            document.body.classList.contains("dark-mode");
+
+        localStorage.setItem(
+            "expenseTrackerDarkMode",
+            isDarkMode ? "enabled" : "disabled"
+        );
 
         darkModeToggle.textContent = isDarkMode
             ? "☀️ Light Mode"
             : "🌙 Dark Mode";
-
-        localStorage.setItem("expenseTrackerDarkMode", isDarkMode);
     });
-
-    if (localStorage.getItem("expenseTrackerDarkMode") === "true") {
-        document.body.classList.add("dark-mode");
-        darkModeToggle.textContent = "☀️ Light Mode";
-    }
 }
 
-/* INITIAL PAGE SETUP */
-dateInput.value = getTodayDate();
-updateSummary();
+
+/* INITIALIZE THE APP */
+if (dateInput && !dateInput.value) {
+    dateInput.value = getTodayDate();
+}
+
 displayTransactions();
+updateSummary();
