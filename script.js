@@ -416,3 +416,84 @@ if (dateInput && !dateInput.value) {
 
 displayTransactions();
 updateSummary();
+
+/* EXPENSE CHART */
+function drawExpenseChart() {
+    const canvas = document.getElementById("expenseChart");
+
+    if (!canvas) {
+        return;
+    }
+
+    const ctx = canvas.getContext("2d");
+    const expensesByCategory = {};
+
+    transactions
+        .filter(transaction => transaction.type === "expense")
+        .forEach(transaction => {
+            const category = transaction.category || "Uncategorized";
+            expensesByCategory[category] =
+                (expensesByCategory[category] || 0) +
+                Number(transaction.amount);
+        });
+
+    const categories = Object.keys(expensesByCategory);
+    const amounts = Object.values(expensesByCategory);
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    if (categories.length === 0) {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#6b7280";
+        ctx.textAlign = "center";
+        ctx.fillText("Add an expense to see your chart.", width / 2, height / 2);
+        return;
+    }
+
+    const maxAmount = Math.max(...amounts);
+    const chartLeft = 120;
+    const chartRight = width - 20;
+    const chartWidth = chartRight - chartLeft;
+    const barHeight = 24;
+    const gap = 14;
+    const totalHeight = categories.length * (barHeight + gap);
+    const startY = Math.max(10, (height - totalHeight) / 2);
+
+    categories.forEach((category, index) => {
+        const y = startY + index * (barHeight + gap);
+        const barWidth = (expensesByCategory[category] / maxAmount) * chartWidth;
+
+        ctx.fillStyle = "#374151";
+        ctx.font = "12px Arial";
+        ctx.textAlign = "right";
+        ctx.fillText(
+            category.length > 14 ? category.slice(0, 14) + "…" : category,
+            chartLeft - 10,
+            y + 16
+        );
+
+        ctx.fillStyle = "#7c3aed";
+        ctx.fillRect(chartLeft, y, barWidth, barHeight);
+
+        ctx.fillStyle = "#111827";
+        ctx.textAlign = "left";
+        ctx.fillText(
+            Number(expensesByCategory[category]).toLocaleString("en-KE"),
+            chartLeft + barWidth + 5,
+            y + 16
+        );
+    });
+}
+
+/* REDRAW CHART WHEN TRANSACTIONS CHANGE */
+const originalUpdateSummary = updateSummary;
+
+updateSummary = function () {
+    originalUpdateSummary();
+    drawExpenseChart();
+};
+
+drawExpenseChart();
