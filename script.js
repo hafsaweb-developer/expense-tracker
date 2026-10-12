@@ -74,28 +74,7 @@ function updateSummary() {
     expensesDisplay.textContent = formatMoney(expenses);
 }
 updateBudget();
-/* SAVE MONTHLY BUDGET */
-budgetForm.addEventListener("submit", function (event) {
-    event.preventDefault();
 
-    const enteredBudget = Number(monthlyBudgetInput.value);
-
-    if (!Number.isFinite(enteredBudget) || enteredBudget <= 0) {
-        alert("Please enter a valid budget greater than zero.");
-        return;
-    }
-
-    monthlyBudget = enteredBudget;
-
-    localStorage.setItem(
-        "expenseTrackerMonthlyBudget",
-        monthlyBudget
-    );
-
-    updateBudget();
-
-    alert("Monthly budget saved successfully!");
-});
 /* UPDATE MONTHLY BUDGET */
 function updateBudget() {
     const currentMonth = getTodayDate().slice(0, 7);
@@ -138,6 +117,27 @@ function updateBudget() {
             `${percentage.toFixed(1)}% used. ${formatMoney(monthlyBudget - monthlyExpenses)} remaining.`;
     }
 }
+
+/* SAVE MONTHLY BUDGET */
+budgetForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const enteredBudget = Number(monthlyBudgetInput.value);
+
+    if (!Number.isFinite(enteredBudget) || enteredBudget <= 0) {
+        alert("Please enter a valid budget greater than zero.");
+        return;
+    }
+
+    monthlyBudget = enteredBudget;
+
+    localStorage.setItem("expenseTrackerMonthlyBudget", monthlyBudget);
+
+    updateBudget();
+
+    alert("Monthly budget saved successfully!");
+});
+
 /* DISPLAY TRANSACTIONS */
 function displayTransactions() {
     transactionList.innerHTML = "";
