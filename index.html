@@ -29,7 +29,36 @@
                 <p id="expenses">KSh 0.00</p>
             </div>
         </section>
+<!-- MONTHLY BUDGET -->
+<section class="section budget-section">
+    <h2>Monthly Budget</h2>
+    <p>Set your monthly spending limit and track your expenses.</p>
 
+    <form id="budgetForm">
+        <label for="monthlyBudget">Monthly Budget (KSh)</label>
+        <input
+            type="number"
+            id="monthlyBudget"
+            placeholder="Enter your monthly budget"
+            min="1"
+            step="0.01"
+            required
+        >
+
+        <button type="submit">Save Budget</button>
+    </form>
+
+    <div class="budget-progress">
+        <p>Budget Used</p>
+        <h3 id="budgetStatus">Set your budget to get started.</h3>
+
+        <div class="progress-track">
+            <div id="budgetProgressBar" class="progress-fill"></div>
+        </div>
+
+        <p id="budgetMessage">Your spending progress will appear here.</p>
+    </div>
+</section>
         <section class="section">
             <h2>Add a Transaction</h2>
             <form id="transactionForm">
