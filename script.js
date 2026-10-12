@@ -254,7 +254,32 @@ function displayTransactions() {
         return;
     }
 
-    const sortedTransactions = [...transactions].sort((a, b) => {
+   const searchText = document
+    .getElementById("searchTransactions")
+    ?.value.toLowerCase().trim() || "";
+
+const selectedType =
+    document.getElementById("filterType")?.value || "all";
+
+const selectedCategory =
+    document.getElementById("filterCategory")?.value || "all";
+
+const filteredTransactions = transactions.filter((transaction) => {
+    const matchesSearch = (transaction.description || "")
+        .toLowerCase()
+        .includes(searchText);
+
+    const matchesType =
+        selectedType === "all" || transaction.type === selectedType;
+
+    const matchesCategory =
+        selectedCategory === "all" ||
+        transaction.category === selectedCategory;
+
+    return matchesSearch && matchesType && matchesCategory;
+});
+
+const sortedTransactions = [...filteredTransactions].sort((a, b) => {
         const dateDifference = (b.date || "").localeCompare(a.date || "");
 
         if (dateDifference !== 0) {
