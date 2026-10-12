@@ -1,205 +1,52 @@
 
-/* General page styling */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* Dark Mode */
+body.dark-mode {
+    background: #111827;
+    color: #f9fafb;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f3ff;
-    color: #272343;
-    padding: 30px 16px;
+body.dark-mode header p {
+    color: #d1d5db;
 }
 
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
+body.dark-mode .card,
+body.dark-mode .section {
+    background: #1f2937;
+    color: #f9fafb;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-header {
-    text-align: center;
-    margin-bottom: 30px;
+body.dark-mode .card h3,
+body.dark-mode .transaction-info p,
+body.dark-mode .empty-message {
+    color: #d1d5db;
 }
 
-header h1 {
-    color: #6d28d9;
-    font-size: 32px;
-    margin-bottom: 10px;
+body.dark-mode .section h2,
+body.dark-mode header h1 {
+    color: #c4b5fd;
 }
 
-header p {
-    color: #6b7280;
+body.dark-mode input,
+body.dark-mode select {
+    background: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
 }
 
-/* Summary cards */
-.summary {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-bottom: 30px;
+body.dark-mode input::placeholder {
+    color: #d1d5db;
 }
 
-.card {
-    background: white;
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+body.dark-mode .transaction {
+    border-bottom-color: #374151;
 }
 
-.card h3 {
-    color: #6b7280;
-    font-size: 15px;
-    margin-bottom: 12px;
+body.dark-mode .delete-button {
+    background: #7f1d1d;
+    color: #fecaca;
 }
 
-.card p {
-    font-size: 25px;
-    font-weight: bold;
-    overflow-wrap: anywhere;
-}
-
-.balance {
-    border-top: 5px solid #7c3aed;
-}
-
-.income {
-    border-top: 5px solid #16a34a;
-}
-
-.expenses {
-    border-top: 5px solid #dc2626;
-}
-
-/* Main sections */
-.section {
-    background: white;
-    padding: 25px;
-    border-radius: 16px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.section h2 {
-    color: #6d28d9;
-    margin-bottom: 20px;
-}
-
-/* Form styling */
-form {
-    display: grid;
-    gap: 12px;
-}
-
-label {
-    font-weight: bold;
-    font-size: 14px;
-}
-
-input,
-select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd6fe;
-    border-radius: 8px;
-    font-size: 15px;
-    background: #fff;
-}
-
-input:focus,
-select:focus {
-    outline: 2px solid #a78bfa;
-    border-color: #7c3aed;
-}
-
-button {
-    padding: 13px;
-    border: none;
-    border-radius: 8px;
-    background: #7c3aed;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 8px;
-}
-
-button:hover {
-    background: #5b21b6;
-}
-
-/* Transaction list */
-.transaction {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    padding: 16px 0;
-    border-bottom: 1px solid #ede9fe;
-}
-
-.transaction-info h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
-}
-
-.transaction-info p {
-    color: #6b7280;
-    font-size: 13px;
-}
-
-.transaction-amount {
-    font-weight: bold;
-    text-align: right;
-    overflow-wrap: anywhere;
-}
-
-.income-text {
-    color: #16a34a;
-}
-
-.expense-text {
-    color: #dc2626;
-}
-
-.delete-button {
-    background: #fee2e2;
-    color: #b91c1c;
-    padding: 8px 12px;
-    font-size: 13px;
-}
-
-.delete-button:hover {
-    background: #fecaca;
-}
-
-.empty-message {
-    color: #6b7280;
-    text-align: center;
-    padding: 20px 0;
-}
-
-/* Mobile layout */
-@media (max-width: 650px) {
-    body {
-        padding: 20px 12px;
-    }
-
-    .summary {
-        grid-template-columns: 1fr;
-    }
-
-    header h1 {
-        font-size: 27px;
-    }
-
-    .card,
-    .section {
-        padding: 20px;
-    }
-
-    .transaction {
-        flex-wrap: wrap;
-    }
+body.dark-mode .delete-button:hover {
+    background: #991b1b;
 }
