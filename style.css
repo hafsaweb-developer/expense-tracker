@@ -655,3 +655,23 @@ body.dark-mode .progress-track {
         width: 100%;
     }
 }
+
+/* EDIT TRANSACTION BUTTON */
+.edit-button {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: #6d4aff;
+    color: #ffffff;
+    padding: 8px 14px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #5635d9;
+}
