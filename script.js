@@ -318,6 +318,57 @@ const sortedTransactions = [...filteredTransactions].sort((a, b) => {
         deleteButton.type = "button";
         deleteButton.textContent = "Delete";
         deleteButton.className = "delete-button";
+       
+const editButton = document.createElement("button");
+editButton.type = "button";
+editButton.textContent = "Edit";
+editButton.className = "edit-button";
+
+editButton.addEventListener("click", function () {
+    const newDescription = prompt(
+        "Edit transaction description:",
+        transaction.description
+    );
+
+    if (newDescription === null) {
+        return;
+    }
+
+    const cleanedDescription = newDescription.trim();
+
+    if (cleanedDescription === "") {
+        alert("Description cannot be empty.");
+        return;
+    }
+
+    const newAmountText = prompt(
+        "Edit transaction amount (KSh):",
+        transaction.amount
+    );
+
+    if (newAmountText === null) {
+        return;
+    }
+
+    const newAmount = Number(newAmountText);
+
+    if (!Number.isFinite(newAmount) || newAmount <= 0) {
+        alert("Please enter a valid amount greater than zero.");
+        return;
+    }
+
+    transaction.description = cleanedDescription;
+    transaction.amount = newAmount;
+
+    localStorage.setItem(
+        "expenseTrackerTransactions",
+        JSON.stringify(transactions)
+    );
+
+    displayTransactions();
+    updateSummary();
+});
+
 
         deleteButton.addEventListener("click", function () {
             const confirmed = confirm(
@@ -340,10 +391,12 @@ const sortedTransactions = [...filteredTransactions].sort((a, b) => {
         details.appendChild(title);
         details.appendChild(info);
 
-        item.appendChild(details);
-        item.appendChild(amount);
-        item.appendChild(deleteButton);
-
+     
+item.appendChild(details);
+item.appendChild(amount);
+item.appendChild(editButton);
+item.appendChild(deleteButton);
+ 
         transactionList.appendChild(item);
     });
 }
