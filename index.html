@@ -1,149 +1,122 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Expense Tracker</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>My Expense Tracker</h1>
-            <p>Manage your money, reach your goals.</p>
-            <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
-        </header>
+<!-- EXPENSE CHARTS -->
+<section class="section">
+    <h2>Expense Charts</h2>
+    <p>See how your spending is divided by category.</p>
 
-        <section class="summary">
-            <div class="card balance">
-                <h3>Total Balance</h3>
-                <p id="balance">KSh 0.00</p>
-            </div>
-            <div class="card income">
-                <h3>Total Income</h3>
-                <p id="income">KSh 0.00</p>
-            </div>
-            <div class="card expenses">
-                <h3>Total Expenses</h3>
-                <p id="expenses">KSh 0.00</p>
-            </div>
-        </section>
-<!-- MONTHLY BUDGET -->
-<section class="section budget-section">
-    <h2>Monthly Budget</h2>
-    <p>Set your monthly spending limit and track your expenses.</p>
+    <canvas id="expenseChart" width="400" height="250"></canvas>
+</section>
 
-    <form id="budgetForm">
-        <label for="monthlyBudget">Monthly Budget (KSh)</label>
+<!-- ADD TRANSACTION -->
+<section class="section">
+    <h2>Add Transaction</h2>
+
+    <form id="transactionForm">
+        <label for="description">Description</label>
         <input
-            type="number"
-            id="monthlyBudget"
-            placeholder="Enter your monthly budget"
-            min="1"
-            step="0.01"
+            type="text"
+            id="description"
             required
+            placeholder="e.g. Salary"
         >
 
-        <button type="submit">Save Budget</button>
+        <label for="amount">Amount (KSh)</label>
+        <input
+            type="number"
+            id="amount"
+            min="0.01"
+            step="0.01"
+            required
+            placeholder="Enter amount"
+        >
+
+        <label for="type">Transaction Type</label>
+        <select id="type" required>
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+        </select>
+
+        <label for="category">Category</label>
+        <select id="category" required>
+            <option value="Other">Other</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Bills">Bills</option>
+            <option value="Health">Health</option>
+            <option value="Education">Education</option>
+        </select>
+
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
+
+        <button type="submit">Add Transaction</button>
     </form>
+</section>
 
-    <div class="budget-progress">
-        <p>Budget Used</p>
-        <h3 id="budgetStatus">Set your budget to get started.</h3>
+<!-- MONTHLY EXPENSE HISTORY -->
+<section class="section">
+    <h2>Monthly Expense History</h2>
+    <p>Compare your spending across different months.</p>
 
-        <div class="progress-track">
-            <div id="budgetProgressBar" class="progress-fill"></div>
+    <div class="monthly-history-card">
+        <label for="historyMonth">Choose a month</label>
+        <input type="month" id="historyMonth">
+
+        <div class="history-summary">
+            <span>Total expenses this month</span>
+            <h3 id="historyTotal">KSh 0.00</h3>
         </div>
 
-        <p id="budgetMessage">Your spending progress will appear here.</p>
+        <div class="history-summary">
+            <span>Total income this month</span>
+            <h3 id="historyIncome">KSh 0.00</h3>
+        </div>
+
+        <div class="history-summary">
+            <span>Difference</span>
+            <h3 id="historyDifference">KSh 0.00</h3>
+        </div>
     </div>
 </section>
-        <section class="section">
-            <h2>Add a Transaction</h2>
-            <form id="transactionForm">
-                <label for="description">Description</label>
-                <input type="text" id="description"
-                       placeholder="e.g. Salary, groceries" required>
 
-                <label for="amount">Amount (KSh)</label>
-                <input type="number" id="amount"
-                       placeholder="Enter amount" min="0.01"
-                       step="0.01" required>
+<!-- RECENT TRANSACTIONS -->
+<section class="section">
+    <!-- SEARCH AND FILTER TRANSACTIONS -->
+    <div class="transaction-filters">
+        <input
+            type="text"
+            id="searchTransactions"
+            placeholder="Search transactions..."
+        >
 
-                <label for="type">Transaction Type</label>
-                <select id="type" required>
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
-                </select>
-<label for="category">Category</label>
-<select id="category" required>
-    <option value="food">Food</option>
-    <option value="transport">Transport</option>
-    <option value="rent">Rent</option>
-    <option value="shopping">Shopping</option>
-    <option value="bills">Bills</option>
-    <option value="salary">Salary</option>
-    <option value="business">Business</option>
-    <option value="other">Other</option>
-</select>
-                <label for="date">Date</label>
-                <input type="date" id="date" required>
+        <select id="filterType">
+            <option value="all">All Transactions</option>
+            <option value="income">Income Only</option>
+            <option value="expense">Expenses Only</option>
+        </select>
 
-        <!-- EXPENSE CHARTS -->
-        <section class="section">
-            <h2>Expense Charts</h2>
-            <p>See how your spending is divided by category.</p>
-
-            <canvas id="expenseChart" width="400" height="250"></canvas>
-        </section>
-
-                <button type="submit">Add Transaction</button>
-            </form>
-        </section>
-
-        <section class="section">
-            
-<!-- SEARCH AND FILTER TRANSACTIONS -->
-<div class="transaction-filters">
-    <input
-        type="text"
-        id="searchTransactions"
-        placeholder="Search transactions..."
-    >
-
-    <select id="filterType">
-        <option value="all">All Transactions</option>
-        <option value="income">Income Only</option>
-        <option value="expense">Expenses Only</option>
-    </select>
-
-    <select id="filterCategory">
-        <option value="all">All Categories</option>
-        <option value="Food">Food</option>
-        <option value="Transport">Transport</option>
-        <option value="Shopping">Shopping</option>
-        <option value="Bills">Bills</option>
-        <option value="Health">Health</option>
-        <option value="Education">Education</option>
-        <option value="Other">Other</option>
-    </select>
-</div>
-
-            <h2>Recent Transactions</h2>
-            <div id="transactionList">
-                <p class="empty-message">
-                    No transactions yet. Add your first one!
-                </p>
-            </div>
-            
-<button type="button" id="downloadReport">
-    Download Transactions Report
-</button>
-
-        </section>
+        <select id="filterCategory">
+            <option value="all">All Categories</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Bills">Bills</option>
+            <option value="Health">Health</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+        </select>
     </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+    <h2>Recent Transactions</h2>
+
+    <div id="transactionList">
+        <p class="empty-message">
+            No transactions yet. Add your first one!
+        </p>
+    </div>
+
+    <button type="button" id="downloadReport">
+        Download Transactions Report
+    </button>
+</section>
