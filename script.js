@@ -714,3 +714,65 @@ if (dateInput && !dateInput.value) {
 
 displayTransactions();
 updateSummary();
+
+/* ========================================
+   MONTHLY EXPENSE HISTORY
+======================================== */
+
+const historyMonthInput = document.getElementById("historyMonth");
+const historyTotalDisplay = document.getElementById("historyTotal");
+const historyIncomeDisplay = document.getElementById("historyIncome");
+const historyDifferenceDisplay = document.getElementById("historyDifference");
+
+function updateMonthlyHistory() {
+    if (
+        !historyMonthInput ||
+        !historyTotalDisplay ||
+        !historyIncomeDisplay ||
+        !historyDifferenceDisplay
+    ) {
+        return;
+    }
+
+    const selectedMonth = historyMonthInput.value;
+
+    const monthlyTransactions = transactions.filter(transaction =>
+        transaction.date &&
+        transaction.date.slice(0, 7) === selectedMonth
+    );
+
+    const monthlyExpenses = monthlyTransactions
+        .filter(transaction => transaction.type === "expense")
+        .reduce((total, transaction) => total + Number(transaction.amount), 0);
+
+    const monthlyIncome = monthlyTransactions
+        .filter(transaction => transaction.type === "income")
+        .reduce((total, transaction) => total + Number(transaction.amount), 0);
+
+    const difference = monthlyIncome - monthlyExpenses;
+
+    historyTotalDisplay.textContent = formatMoney(monthlyExpenses);
+    historyIncomeDisplay.textContent = formatMoney(monthlyIncome);
+    historyDifferenceDisplay.textContent = formatMoney(difference);
+
+    historyDifferenceDisplay.style.color = difference < 0
+        ? "#dc2626"
+        : "#16a34a";
+}
+
+/* SELECT THE CURRENT MONTH BY DEFAULT */
+if (historyMonthInput) {
+    historyMonthInput.value = getTodayDate().slice(0, 7);
+
+    historyMonthInput.addEventListener("change", updateMonthlyHistory);
+}
+
+/* REFRESH HISTORY WHEN TRANSACTIONS CHANGE */
+const originalDisplayTransactions = displayTransactions;
+
+displayTransactions = function () {
+    originalDisplayTransactions();
+    updateMonthlyHistory();
+};
+
+updateMonthlyHistory();
