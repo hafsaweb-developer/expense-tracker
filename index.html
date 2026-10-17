@@ -4,65 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6d4aff">
     <title>My Expense Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-
-        <header>
+        <header class="app-header">
+            <div class="brand-mark">ET</div>
             <h1>My Expense Tracker</h1>
             <p>Manage your money, reach your goals.</p>
-            <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
+            <button type="button" id="darkModeToggle" class="theme-button">
+                🌙 Dark Mode
+            </button>
         </header>
 
-        <!-- SUMMARY -->
-        <section class="summary">
+        <!-- SUMMARY CARDS -->
+        <section class="summary" aria-label="Financial summary">
             <div class="card balance">
-                <h3>Total Balance</h3>
-                <p id="balance">KSh 0.00</p>
+                <span class="card-label">Total Balance</span>
+                <h2 id="balance">KSh 0.00</h2>
             </div>
             <div class="card income">
-                <h3>Total Income</h3>
-                <p id="income">KSh 0.00</p>
+                <span class="card-label">Total Income</span>
+                <h2 id="income">KSh 0.00</h2>
             </div>
             <div class="card expenses">
-                <h3>Total Expenses</h3>
-                <p id="expenses">KSh 0.00</p>
+                <span class="card-label">Total Expenses</span>
+                <h2 id="expenses">KSh 0.00</h2>
             </div>
         </section>
 
         <!-- MONTHLY BUDGET -->
         <section class="section budget-section">
-            <h2>Monthly Budget</h2>
-            <p>Set your monthly spending limit and track your expenses.</p>
+            <div class="section-heading">
+                <h2>Monthly Budget</h2>
+                <p>Set your spending limit and track your progress.</p>
+            </div>
 
             <form id="budgetForm">
                 <label for="monthlyBudget">Monthly Budget (KSh)</label>
                 <input
                     type="number"
                     id="monthlyBudget"
-                    placeholder="Enter your monthly budget"
                     min="1"
                     step="0.01"
+                    placeholder="Enter your monthly budget"
                     required
                 >
                 <button type="submit">Save Budget</button>
             </form>
 
             <div class="budget-progress">
-                <p>Budget Used</p>
-                <h3 id="budgetStatus">Set your budget to get started.</h3>
+                <div class="progress-heading">
+                    <span>Budget Used</span>
+                    <strong id="budgetStatus">No budget set yet</strong>
+                </div>
                 <div class="progress-track">
                     <div id="budgetProgressBar" class="progress-fill"></div>
                 </div>
-                <p id="budgetMessage">Your spending progress will appear here.</p>
+                <p id="budgetMessage">Enter your monthly budget to get started.</p>
             </div>
         </section>
 
         <!-- ADD TRANSACTION -->
         <section class="section">
-            <h2>Add Transaction</h2>
+            <div class="section-heading">
+                <h2>Add Transaction</h2>
+                <p>Record money coming in or going out.</p>
+            </div>
 
             <form id="transactionForm">
                 <label for="description">Description</label>
@@ -77,20 +87,21 @@
                 <input
                     type="number"
                     id="amount"
-                    placeholder="Enter amount"
                     min="0.01"
                     step="0.01"
+                    placeholder="Enter amount"
                     required
                 >
 
                 <label for="type">Transaction Type</label>
                 <select id="type" required>
-                    <option value="income">Income</option>
                     <option value="expense" selected>Expense</option>
+                    <option value="income">Income</option>
                 </select>
 
                 <label for="category">Category</label>
                 <select id="category" required>
+                    <option value="Other">Other</option>
                     <option value="Food">Food</option>
                     <option value="Transport">Transport</option>
                     <option value="Rent">Rent</option>
@@ -100,7 +111,6 @@
                     <option value="Education">Education</option>
                     <option value="Salary">Salary</option>
                     <option value="Business">Business</option>
-                    <option value="Other">Other</option>
                 </select>
 
                 <label for="date">Date</label>
@@ -110,58 +120,75 @@
             </form>
         </section>
 
-        <!-- EXPENSE CHARTS -->
+        <!-- EXPENSE CHART -->
         <section class="section">
-            <h2>Expense Charts</h2>
-            <p>See how your spending is divided by category.</p>
-            <canvas id="expenseChart" width="400" height="250"></canvas>
+            <div class="section-heading">
+                <h2>Expense Charts</h2>
+                <p>See how your spending is divided by category.</p>
+            </div>
+            <div class="chart-container">
+                <canvas
+                    id="expenseChart"
+                    width="800"
+                    height="320"
+                    role="img"
+                    aria-label="Expenses grouped by category"
+                >Your browser does not support canvas charts.</canvas>
+            </div>
         </section>
 
         <!-- MONTHLY EXPENSE HISTORY -->
         <section class="section">
-            <h2>Monthly Expense History</h2>
-            <p>Compare your spending across different months.</p>
+            <div class="section-heading">
+                <h2>Monthly Expense History</h2>
+                <p>Compare your income and spending by month.</p>
+            </div>
 
             <div class="monthly-history-card">
                 <label for="historyMonth">Choose a month</label>
                 <input type="month" id="historyMonth">
 
-                <div class="history-summary">
-                    <span>Total expenses this month</span>
-                    <h3 id="historyTotal">KSh 0.00</h3>
-                </div>
-
-                <div class="history-summary">
-                    <span>Total income this month</span>
-                    <h3 id="historyIncome">KSh 0.00</h3>
-                </div>
-
-                <div class="history-summary">
-                    <span>Difference</span>
-                    <h3 id="historyDifference">KSh 0.00</h3>
+                <div class="history-grid">
+                    <div class="history-summary">
+                        <span>Total expenses</span>
+                        <h3 id="historyTotal">KSh 0.00</h3>
+                    </div>
+                    <div class="history-summary">
+                        <span>Total income</span>
+                        <h3 id="historyIncome">KSh 0.00</h3>
+                    </div>
+                    <div class="history-summary">
+                        <span>Difference</span>
+                        <h3 id="historyDifference">KSh 0.00</h3>
+                    </div>
                 </div>
             </div>
         </section>
 
         <!-- RECENT TRANSACTIONS -->
         <section class="section">
-            <h2>Recent Transactions</h2>
+            <div class="section-heading">
+                <h2>Recent Transactions</h2>
+                <p>Search, filter, edit, or delete your records.</p>
+            </div>
 
             <div class="transaction-filters">
                 <input
-                    type="text"
+                    type="search"
                     id="searchTransactions"
                     placeholder="Search transactions..."
+                    aria-label="Search transactions"
                 >
 
-                <select id="filterType">
+                <select id="filterType" aria-label="Filter by type">
                     <option value="all">All Transactions</option>
                     <option value="income">Income Only</option>
                     <option value="expense">Expenses Only</option>
                 </select>
 
-                <select id="filterCategory">
+                <select id="filterCategory" aria-label="Filter by category">
                     <option value="all">All Categories</option>
+                    <option value="Other">Other</option>
                     <option value="Food">Food</option>
                     <option value="Transport">Transport</option>
                     <option value="Rent">Rent</option>
@@ -171,21 +198,23 @@
                     <option value="Education">Education</option>
                     <option value="Salary">Salary</option>
                     <option value="Business">Business</option>
-                    <option value="Other">Other</option>
                 </select>
             </div>
 
-            <div id="transactionList">
+            <div id="transactionList" aria-live="polite">
                 <p class="empty-message">
                     No transactions yet. Add your first one!
                 </p>
             </div>
 
-            <button type="button" id="downloadReport">
+            <button type="button" id="downloadReport" class="secondary-button">
                 Download Transactions Report
             </button>
         </section>
 
+        <footer class="app-footer">
+            <p>My Expense Tracker · Keep your finances organised.</p>
+        </footer>
     </div>
 
     <script src="script.js"></script>
