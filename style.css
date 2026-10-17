@@ -377,3 +377,24 @@ body.dark-mode .transaction {
         padding: 17px;
     }
 }
+
+/* Center the Expense Tracker header */
+header .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+}
+
+header h1,
+header p {
+    text-align: center;
+    margin: 0;
+}
+
+#darkModeToggle {
+    display: block;
+    margin: 0 auto;
+}
