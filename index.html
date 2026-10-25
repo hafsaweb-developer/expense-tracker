@@ -4,770 +4,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6d4aff">
-    <title>My Expense Tracker</title>
+    <title>Expense Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header class="app-header">
-            <div class="brand-mark">ET</div>
-            <h1>My Expense Tracker</h1>
-            <p>Manage your money, reach your goals.</p>
-            <button type="button" id="darkModeToggle" class="theme-button">
-                🌙 Dark Mode
-            </button>
-        </header>
-        <!-- SUMMARY CARDS -->
-        <section class="summary" aria-label="Financial summary">
-            <div class="card balance">
-                <span class="card-label">Total Balance</span>
-                <h2 id="balance">KSh 0.00</h2>
+
+    <header class="main-header">
+        <div class="header-content">
+            <div>
+                <h1>Expense Tracker</h1>
+                <p>Manage your money, track your spending, and reach your goals.</p>
             </div>
-            <div class="card income">
-                <span class="card-label">Total Income</span>
-                <h2 id="income">KSh 0.00</h2>
+            <button id="darkModeToggle" type="button">🌙 Dark Mode</button>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Summary Cards -->
+        <section class="summary-grid">
+            <div class="summary-card">
+                <p>Total Balance</p>
+                <h2 id="totalBalance">KSh 0.00</h2>
             </div>
-            <div class="card expenses">
-                <span class="card-label">Total Expenses</span>
-                <h2 id="expenses">KSh 0.00</h2>
+
+            <div class="summary-card">
+                <p>Total Income</p>
+                <h2 id="totalIncome">KSh 0.00</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Total Expenses</p>
+                <h2 id="totalExpenses">KSh 0.00</h2>
             </div>
         </section>
-        <!-- MONTHLY BUDGET -->
-        <section class="section budget-section">
+
+        <!-- Monthly Budget -->
+        <section class="section">
             <div class="section-heading">
                 <h2>Monthly Budget</h2>
-                <p>Set your spending limit and track your progress.</p>
+                <p>Set a spending limit and monitor your progress.</p>
             </div>
-            <form id="budgetForm">
-                <label for="monthlyBudget">Monthly Budget (KSh)</label>
-                <input
-                    type="number"
-                    id="monthlyBudget"
-                    min="1"
-                    step="0.01"
-                    placeholder="Enter your monthly budget"
-                    required
-                >
-                <button type="submit">Save Budget</button>
-            </form>
-            <div class="budget-progress">
-                <div class="progress-heading">
-                    <span>Budget Used</span>
-                    <strong id="budgetStatus">No budget set yet</strong>
+
+            <div class="budget-card">
+                <form id="budgetForm">
+                    <label for="monthlyBudget">Monthly budget (KSh)</label>
+                    <div class="form-row">
+                        <input
+                            type="number"
+                            id="monthlyBudget"
+                            min="0"
+                            step="0.01"
+                            placeholder="Enter your monthly budget"
+                            required
+                        >
+                        <button type="submit">Save Budget</button>
+                    </div>
+                </form>
+
+                <div class="budget-progress">
+                    <div class="progress-info">
+                        <span>Budget used</span>
+                        <span id="budgetPercentage">0%</span>
+                    </div>
+
+                    <div class="progress-track">
+                        <div id="budgetProgressBar" class="progress-bar"></div>
+                    </div>
+
+                    <p id="budgetMessage">Set your monthly budget to get started.</p>
                 </div>
-                <div class="progress-track">
-                    <div id="budgetProgressBar" class="progress-fill"></div>
-                </div>
-                <p id="budgetMessage">Enter your monthly budget to get started.</p>
             </div>
         </section>
-        <!-- ADD TRANSACTION -->
+
+        <!-- Add Transaction -->
         <section class="section">
             <div class="section-heading">
                 <h2>Add Transaction</h2>
-                <p>Record money coming in or going out.</p>
+                <p>Record your income and expenses.</p>
             </div>
-            <form id="transactionForm">
-                <label for="description">Description</label>
-                <input
-                    type="text"
-                    id="description"
-                    placeholder="e.g. Salary, groceries"
-                    required
-                >
-                <label for="amount">Amount (KSh)</label>
-                <input
-                    type="number"
-                    id="amount"
-                    min="0.01"
-                    step="0.01"
-                    placeholder="Enter amount"
-                    required
-                >
-                <label for="type">Transaction Type</label>
-                <select id="type" required>
-                    <option value="expense" selected>Expense</option>
-                    <option value="income">Income</option>
-                </select>
-                <label for="category">Category</label>
-                <select id="category" required>
-                    <option value="Other">Other</option>
-                    <option value="Food">Food</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Rent">Rent</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Bills">Bills</option>
-                    <option value="Health">Health</option>
-                    <option value="Education">Education</option>
-                    <option value="Salary">Salary</option>
-                    <option value="Business">Business</option>
-                </select>
-                <label for="date">Date</label>
-                <input type="date" id="date" required>
-                <button type="submit">Add Transaction</button>
-            </form>
+
+            <div class="transaction-form-card">
+                <form id="transactionForm">
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="transactionTitle">Transaction title</label>
+                            <input
+                                type="text"
+                                id="transactionTitle"
+                                placeholder="e.g. Shopping or Salary"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionAmount">Amount (KSh)</label>
+                            <input
+                                type="number"
+                                id="transactionAmount"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="Enter amount"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionType">Transaction type</label>
+                            <select id="transactionType" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionCategory">Category</label>
+                            <select id="transactionCategory" required>
+                                <option value="Food">Food</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Bills">Bills</option>
+                                <option value="Health">Health</option>
+                                <option value="Education">Education</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Business">Business</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transactionDate">Date</label>
+                            <input type="date" id="transactionDate" required>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" id="addTransactionButton">
+                        Add Transaction
+                    </button>
+                </form>
+            </div>
         </section>
-        <!-- EXPENSE CHART -->
+
+        <!-- Expense Chart -->
         <section class="section">
             <div class="section-heading">
-                <h2>Expense Charts</h2>
-                <p>See how your spending is divided by category.</p>
+                <h2>Expense Overview</h2>
+                <p>See how your expenses are distributed.</p>
             </div>
-            <div class="chart-container">
-                <canvas
-                    id="expenseChart"
-                    width="800"
-                    height="320"
-                    role="img"
-                    aria-label="Expenses grouped by category"
-                >Your browser does not support canvas charts.</canvas>
+
+            <div class="chart-card">
+                <canvas id="expenseChart"></canvas>
+                <p id="chartMessage">Add expenses to see your chart.</p>
             </div>
         </section>
-        <!-- MONTHLY EXPENSE HISTORY -->
+
+        <!-- Monthly Expense History -->
         <section class="section">
             <div class="section-heading">
                 <h2>Monthly Expense History</h2>
                 <p>Compare your income and spending by month.</p>
             </div>
+
             <div class="monthly-history-card">
                 <label for="historyMonth">Choose a month</label>
                 <input type="month" id="historyMonth">
+
                 <div class="history-grid">
                     <div class="history-summary">
                         <span>Total expenses</span>
                         <h3 id="historyTotal">KSh 0.00</h3>
                     </div>
+
                     <div class="history-summary">
                         <span>Total income</span>
                         <h3 id="historyIncome">KSh 0.00</h3>
                     </div>
+
                     <div class="history-summary">
                         <span>Difference</span>
                         <h3 id="historyDifference">KSh 0.00</h3>
                     </div>
+
+                    <div class="history-summary">
+                        <span>Number of transactions</span>
+                        <h3 id="historyTransactionCount">0</h3>
+                    </div>
                 </div>
             </div>
         </section>
-        <!-- RECENT TRANSACTIONS -->
+
+        <!-- Recent Transactions -->
         <section class="section">
             <div class="section-heading">
                 <h2>Recent Transactions</h2>
-                <p>Search, filter, edit, or delete your records.</p>
+                <p>Search, review, edit, or delete your transactions.</p>
             </div>
-            <div class="transaction-filters">
-                <input
-                    type="search"
-                    id="searchTransactions"
-                    placeholder="Search transactions..."
-                    aria-label="Search transactions"
-                >
-                <select id="filterType" aria-label="Filter by type">
-                    <option value="all">All Transactions</option>
-                    <option value="income">Income Only</option>
-                    <option value="expense">Expenses Only</option>
-                </select>
-                <select id="filterCategory" aria-label="Filter by category">
-                    <option value="all">All Categories</option>
-                    <option value="Other">Other</option>
-                    <option value="Food">Food</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Rent">Rent</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Bills">Bills</option>
-                    <option value="Health">Health</option>
-                    <option value="Education">Education</option>
-                    <option value="Salary">Salary</option>
-                    <option value="Business">Business</option>
-                </select>
-            </div>
-            <div id="transactionList" aria-live="polite">
-                <p class="empty-message">
-                    No transactions yet. Add your first one!
+
+            <div class="transactions-card">
+
+                <div class="transaction-controls">
+                    <input
+                        type="search"
+                        id="searchTransactions"
+                        placeholder="Search transactions..."
+                    >
+
+                    <select id="filterType">
+                        <option value="all">All transactions</option>
+                        <option value="income">Income only</option>
+                        <option value="expense">Expenses only</option>
+                    </select>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="transactionsList">
+                            <!-- Transactions are added here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <p id="emptyTransactionsMessage">
+                    No transactions yet. Add your first transaction above.
                 </p>
             </div>
-            <button type="button" id="downloadReport" class="secondary-button">
-                Download Transactions Report
-            </button>
         </section>
-        <footer class="app-footer">
-            <p>My Expense Tracker · Keep your finances organised.</p>
-        </footer>
-    </div>
+
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; <span id="currentYear"></span> Expense Tracker. Manage your money wisely.</p>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
-/* =========================================
-   EXPENSE TRACKER - COMPLETE JAVASCRIPT
-========================================= */
-/* CONNECT HTML ELEMENTS */
-const form = document.getElementById("transactionForm");
-const submitButton = form ? form.querySelector('button[type="submit"]') : null;
-const originalSubmitButtonText = submitButton ? submitButton.textContent : "Add Transaction";
-const budgetForm = document.getElementById("budgetForm");
-const monthlyBudgetInput = document.getElementById("monthlyBudget");
-const balanceDisplay = document.getElementById("balance");
-const incomeDisplay = document.getElementById("income");
-const expensesDisplay = document.getElementById("expenses");
-const budgetStatus = document.getElementById("budgetStatus");
-const budgetProgressBar = document.getElementById("budgetProgressBar");
-const budgetMessage = document.getElementById("budgetMessage");
-const descriptionInput = document.getElementById("description");
-const amountInput = document.getElementById("amount");
-const typeInput = document.getElementById("type");
-const categoryInput = document.getElementById("category");
-const dateInput = document.getElementById("date");
-const transactionList = document.getElementById("transactionList");
-const searchInput = document.getElementById("searchTransactions");
-const typeFilter = document.getElementById("filterType");
-const categoryFilter = document.getElementById("filterCategory");
-const darkModeToggle = document.getElementById("darkModeToggle");
-const downloadReportButton = document.getElementById("downloadReport");
-const historyMonthInput = document.getElementById("historyMonth");
-const historyTotalDisplay = document.getElementById("historyTotal");
-const historyIncomeDisplay = document.getElementById("historyIncome");
-const historyDifferenceDisplay = document.getElementById("historyDifference");
-const historyTransactionCountDisplay = document.getElementById("historyTransactionCount");
-const chart = document.getElementById("expenseChart");
-/* =========================================
-   LOAD SAVED DATA
-   Keep existing storage keys.
-========================================= */
-function loadTransactions() {
-    try {
-        const saved = localStorage.getItem("expenseTrackerTransactions");
-        if (!saved) {
-            return [];
-        }
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        console.error("Could not read saved transactions:", error);
-        alert("Your saved transactions could not be read. Please do not clear browser storage.");
-        return [];
-    }
-}
-let transactions = loadTransactions();
-let editingTransactionId = null;
-let monthlyBudget = 0;
-try {
-    monthlyBudget =
-        Number(localStorage.getItem("expenseTrackerMonthlyBudget")) || 0;
-} catch (error) {
-    console.error("Could not read saved budget:", error);
-}
-/* =========================================
-   HELPER FUNCTIONS
-========================================= */
-function getTodayDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-}
-function formatMoney(value) {
-    const amount = Number(value) || 0;
-    return "KSh " + amount.toLocaleString("en-KE", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
-function normalizeCategory(value) {
-    const category = String(value || "Other").trim().toLowerCase();
-    const knownCategories = {
-        food: "Food",
-        transport: "Transport",
-        rent: "Rent",
-        shopping: "Shopping",
-        bills: "Bills",
-        health: "Health",
-        education: "Education",
-        salary: "Salary",
-        business: "Business",
-        other: "Other"
-    };
-    return knownCategories[category] || String(value || "Other").trim();
-}
-function saveTransactions() {
-    try {
-        localStorage.setItem(
-            "expenseTrackerTransactions",
-            JSON.stringify(transactions)
-        );
-        return true;
-    } catch (error) {
-        console.error("Could not save transactions:", error);
-        alert("The browser could not save your changes. Please check available storage.");
-        return false;
-    }
-}
-/* =========================================
-   SUMMARY CARDS
-========================================= */
-function updateSummary() {
-    const income = transactions
-        .filter(item => item.type === "income")
-        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    const expenses = transactions
-        .filter(item => item.type === "expense")
-        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    if (balanceDisplay) {
-        balanceDisplay.textContent = formatMoney(income - expenses);
-    }
-    if (incomeDisplay) {
-        incomeDisplay.textContent = formatMoney(income);
-    }
-    if (expensesDisplay) {
-        expensesDisplay.textContent = formatMoney(expenses);
-    }
-    updateBudget();
-    updateMonthlyHistory();
-    drawExpenseChart();
-}
-/* =========================================
-   MONTHLY BUDGET
-========================================= */
-function updateBudget() {
-    if (!budgetStatus || !budgetProgressBar || !budgetMessage) {
-        return;
-    }
-    const currentMonth = getTodayDate().slice(0, 7);
-    const monthlyExpenses = transactions
-        .filter(item =>
-            item.type === "expense" &&
-            item.date &&
-            item.date.slice(0, 7) === currentMonth
-        )
-        .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-    if (monthlyBudget <= 0) {
-        budgetStatus.textContent = "No budget set yet";
-        budgetProgressBar.style.width = "0%";
-        budgetProgressBar.style.backgroundColor = "#6d4aff";
-        budgetMessage.textContent =
-            "Enter your monthly budget to track your spending.";
-        return;
-    }
-    const percentage = (monthlyExpenses / monthlyBudget) * 100;
-    const shownPercentage = Math.min(percentage, 100);
-    budgetStatus.textContent =
-        `${formatMoney(monthlyExpenses)} spent of ${formatMoney(monthlyBudget)}`;
-    budgetProgressBar.style.width = `${shownPercentage}%`;
-    if (percentage >= 100) {
-        budgetProgressBar.style.backgroundColor = "#dc2626";
-        budgetMessage.textContent =
-            `Budget exceeded by ${formatMoney(monthlyExpenses - monthlyBudget)}.`;
-    } else if (percentage >= 80) {
-        budgetProgressBar.style.backgroundColor = "#f59e0b";
-        budgetMessage.textContent =
-            `${percentage.toFixed(1)}% used. You're getting close to your limit!`;
-    } else {
-        budgetProgressBar.style.backgroundColor = "#16a34a";
-        budgetMessage.textContent =
-            `${percentage.toFixed(1)}% used. ${formatMoney(monthlyBudget - monthlyExpenses)} remaining.`;
-    }
-}
-if (budgetForm) {
-    budgetForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const enteredBudget = Number(monthlyBudgetInput.value);
-        if (!Number.isFinite(enteredBudget) || enteredBudget <= 0) {
-            alert("Please enter a budget greater than zero.");
-            return;
-        }
-        try {
-            localStorage.setItem(
-                "expenseTrackerMonthlyBudget",
-                String(enteredBudget)
-            );
-        } catch (error) {
-            alert("The browser could not save your budget.");
-            return;
-        }
-        monthlyBudget = enteredBudget;
-        updateBudget();
-        alert("Monthly budget saved successfully!");
-    });
-}
-/* =========================================
-   ADD AND EDIT TRANSACTIONS
-========================================= */
-if (form) {
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const description = descriptionInput.value.trim();
-        const amount = Number(amountInput.value);
-        const type = typeInput.value;
-        const category = normalizeCategory(categoryInput.value);
-        const date = dateInput.value || getTodayDate();
-        if (!description) {
-            alert("Please enter a description.");
-            return;
-        }
-        if (!Number.isFinite(amount) || amount <= 0) {
-            alert("Please enter an amount greater than zero.");
-            return;
-        }
-        if (!["income", "expense"].includes(type)) {
-            alert("Please select income or expense.");
-            return;
-        }
-        if (editingTransactionId !== null) {
-            const existingTransaction = transactions.find(
-                item => String(item.id) === String(editingTransactionId)
-            );
-            if (!existingTransaction) {
-                alert("This transaction could not be found. Please try again.");
-                editingTransactionId = null;
-                if (submitButton) {
-                    submitButton.textContent = originalSubmitButtonText;
-                }
-                return;
-            }
-            const previousTransaction = { ...existingTransaction };
-            existingTransaction.description = description;
-            existingTransaction.amount = amount;
-            existingTransaction.type = type;
-            existingTransaction.category = category;
-            existingTransaction.date = date;
-            if (!saveTransactions()) {
-                Object.assign(existingTransaction, previousTransaction);
-                return;
-            }
-            editingTransactionId = null;
-            if (submitButton) {
-                submitButton.textContent = originalSubmitButtonText;
-            }
-        } else {
-            const transaction = {
-                id: Date.now().toString() + Math.random().toString(16).slice(2),
-                description,
-                amount,
-                type,
-                category,
-                date
-            };
-            transactions.push(transaction);
-            if (!saveTransactions()) {
-                transactions.pop();
-                return;
-            }
-        }
-        form.reset();
-        if (dateInput) {
-            dateInput.value = getTodayDate();
-        }
-        displayTransactions();
-        updateSummary();
-    });
-}
-/* =========================================
-   EDIT TRANSACTION
-========================================= */
-function editTransaction(transaction) {
-    editingTransactionId = String(transaction.id);
-    descriptionInput.value = transaction.description || "";
-    amountInput.value = transaction.amount;
-    typeInput.value = transaction.type;
-    categoryInput.value = transaction.category || "Other";
-    dateInput.value = transaction.date || getTodayDate();
-    if (submitButton) {
-        submitButton.textContent = "Save Changes";
-    }
-    form.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-    });
-    descriptionInput.focus();
-}
-/* =========================================
-   DISPLAY TRANSACTIONS
-========================================= */
-function displayTransactions() {
-    if (!transactionList) return;
-    transactionList.replaceChildren();
-    const searchText = searchInput
-        ? searchInput.value.trim().toLowerCase()
-        : "";
-    const selectedType = typeFilter ? typeFilter.value : "all";
-    const selectedCategory = categoryFilter ? categoryFilter.value : "all";
-    const filtered = transactions.filter(transaction => {
-        const description = String(transaction.description || "").toLowerCase();
-        const category = normalizeCategory(transaction.category);
-        const matchesSearch =
-            description.includes(searchText) ||
-            category.toLowerCase().includes(searchText);
-        const matchesType =
-            selectedType === "all" || transaction.type === selectedType;
-        const matchesCategory =
-            selectedCategory === "all" ||
-            category.toLowerCase() === selectedCategory.toLowerCase();
-        return matchesSearch && matchesType && matchesCategory;
-    });
-    filtered.sort((a, b) =>
-        String(b.date || "").localeCompare(String(a.date || "")) ||
-        String(b.id || "").localeCompare(String(a.id || ""))
-    );
-    if (filtered.length === 0) {
-        const message = document.createElement("p");
-        message.className = "empty-message";
-        message.textContent = transactions.length === 0
-            ? "No transactions yet. Add your first one!"
-            : "No matching transactions found.";
-        transactionList.appendChild(message);
-        return;
-    }
-    filtered.forEach(transaction => {
-        const item = document.createElement("article");
-        item.className = "transaction-item";
-        const details = document.createElement("div");
-        details.className = "transaction-details";
-        const title = document.createElement("h3");
-        title.textContent = transaction.description || "Untitled transaction";
-        const info = document.createElement("p");
-        info.textContent =
-            `${normalizeCategory(transaction.category)} • ${transaction.date || "No date"}`;
-        details.append(title, info);
-        const amount = document.createElement("p");
-        amount.className = transaction.type === "income" ? "income" : "expense";
-        amount.textContent =
-            `${transaction.type === "income" ? "+" : "−"}${formatMoney(transaction.amount)}`;
-        const editButton = document.createElement("button");
-        editButton.type = "button";
-        editButton.className = "edit-button";
-        editButton.textContent = "Edit";
-        editButton.addEventListener("click", () => editTransaction(transaction));
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "delete-button";
-        deleteButton.textContent = "Delete";
-        deleteButton.addEventListener("click", function () {
-            if (!confirm("Are you sure you want to delete this transaction?")) {
-                return;
-            }
-            const previousTransactions = transactions;
-            transactions = transactions.filter(saved =>
-                String(saved.id) !== String(transaction.id)
-            );
-            if (!saveTransactions()) {
-                transactions = previousTransactions;
-                return;
-            }
-            displayTransactions();
-            updateSummary();
-        });
-        item.append(details, amount, editButton, deleteButton);
-        transactionList.appendChild(item);
-    });
-}
-/* =========================================
-   SEARCH AND FILTERS
-========================================= */
-if (searchInput) {
-    searchInput.addEventListener("input", displayTransactions);
-}
-if (typeFilter) {
-    typeFilter.addEventListener("change", displayTransactions);
-}
-if (categoryFilter) {
-    categoryFilter.addEventListener("change", displayTransactions);
-}
-/* =========================================
-   DOWNLOAD CSV REPORT
-========================================= */
-if (downloadReportButton) {
-    downloadReportButton.addEventListener("click", function () {
-        if (transactions.length === 0) {
-            alert("There are no transactions to download yet.");
-            return;
-        }
-        const headings = [
-            "Description",
-            "Amount (KSh)",
-            "Type",
-            "Category",
-            "Date"
-        ];
-        function escapeCSV(value) {
-            return '"' + String(value ?? "").replace(/"/g, '""') + '"';
-        }
-        const rows = transactions.map(transaction => [
-            transaction.description,
-            transaction.amount,
-            transaction.type,
-            normalizeCategory(transaction.category),
-            transaction.date || ""
-        ]);
-        const csv = [
-            headings.map(escapeCSV).join(","),
-            ...rows.map(row => row.map(escapeCSV).join(","))
-        ].join("\r\n");
-        const file = new Blob(
-            ["\uFEFF" + csv],
-            { type: "text/csv;charset=utf-8;" }
-        );
-        const url = URL.createObjectURL(file);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "expense-tracker-report.csv";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(url);
-    });
-}
-/* =========================================
-   EXPENSE CHART
-========================================= */
-function drawExpenseChart() {
-    if (!chart || typeof chart.getContext !== "function") return;
-    const ctx = chart.getContext("2d");
-    if (!ctx) return;
-    const width = chart.width;
-    const height = chart.height;
-    const dark = document.body.classList.contains("dark-mode");
-    const textColor = dark ? "#f9fafb" : "#374151";
-    ctx.clearRect(0, 0, width, height);
-    const totals = {};
-    transactions
-        .filter(transaction => transaction.type === "expense")
-        .forEach(transaction => {
-            const category = normalizeCategory(transaction.category);
-            totals[category] =
-                (totals[category] || 0) + Number(transaction.amount || 0);
-        });
-    const categories = Object.keys(totals).sort(
-        (a, b) => totals[b] - totals[a]
-    );
-    ctx.font = "16px Arial";
-    ctx.fillStyle = textColor;
-    ctx.textAlign = "center";
-    if (categories.length === 0) {
-        ctx.fillText("Add an expense to see your chart.", width / 2, height / 2);
-        return;
-    }
-    const left = 125;
-    const right = 100;
-    const top = 18;
-    const barHeight = 25;
-    const gap = 15;
-    const maxBarWidth = width - left - right;
-    const maxAmount = Math.max(...Object.values(totals));
-    categories.forEach((category, index) => {
-        const y = top + index * (barHeight + gap);
-        if (y + barHeight > height) return;
-        const barWidth = maxAmount > 0
-            ? (totals[category] / maxAmount) * maxBarWidth
-            : 0;
-        ctx.textAlign = "right";
-        ctx.font = "13px Arial";
-        ctx.fillStyle = textColor;
-        const label = category.length > 14
-            ? category.slice(0, 13) + "…"
-            : category;
-        ctx.fillText(label, left - 10, y + 17);
-        ctx.fillStyle = dark ? "#4c3b82" : "#ede9fe";
-        ctx.fillRect(left, y, maxBarWidth, barHeight);
-        ctx.fillStyle = "#7c3aed";
-        ctx.fillRect(left, y, barWidth, barHeight);
-        ctx.textAlign = "left";
-        ctx.fillStyle = textColor;
-        ctx.fillText(
-            Number(totals[category]).toLocaleString("en-KE"),
-            left + maxBarWidth + 8,
-            y + 17
-        );
-    });
-}
-/* =========================================
-   MONTHLY REPORT
-========================================= */
-function updateMonthlyHistory() {
-    if (
-        !historyMonthInput ||
-        !historyTotalDisplay ||
-        !historyIncomeDisplay ||
-        !historyDifferenceDisplay
-    ) {
-        return;
-    }
-    const selectedMonth = historyMonthInput.value;
-    const monthTransactions = transactions.filter(transaction =>
-        transaction.date &&
-        transaction.date.slice(0, 7) === selectedMonth
-    );
-    const monthExpenses = monthTransactions
-        .filter(transaction => transaction.type === "expense")
-        .reduce(
-            (sum, transaction) => sum + Number(transaction.amount || 0),
-            0
-        );
-    const monthIncome = monthTransactions
-        .filter(transaction => transaction.type === "income")
-        .reduce(
-            (sum, transaction) => sum + Number(transaction.amount || 0),
-            0
-        );
-    const difference = monthIncome - monthExpenses;
-    historyTotalDisplay.textContent = formatMoney(monthExpenses);
-    historyIncomeDisplay.textContent = formatMoney(monthIncome);
-    historyDifferenceDisplay.textContent = formatMoney(difference);
-    historyDifferenceDisplay.style.color =
-        difference < 0 ? "#dc2626" : "#16a34a";
-    // Show the number of transactions in the selected month.
-    if (historyTransactionCountDisplay) {
-        historyTransactionCountDisplay.textContent =
-            String(monthTransactions.length);
-    }
-}
-if (historyMonthInput) {
-    historyMonthInput.value = getTodayDate().slice(0, 7);
-    historyMonthInput.addEventListener("change", updateMonthlyHistory);
-}
-/* =========================================
-   DARK MODE
-========================================= */
-if (darkModeToggle) {
-    let savedDarkMode = "disabled";
-    try {
-        savedDarkMode =
-            localStorage.getItem("expenseTrackerDarkMode") || "disabled";
-    } catch (error) {
-        console.error("Could not read dark mode preference:", error);
-    }
-    if (savedDarkMode === "enabled") {
-        document.body.classList.add("dark-mode");
-        darkModeToggle.textContent = "☀️ Light Mode";
-    }
-    darkModeToggle.addEventListener("click", function () {
-        document.body.classList.toggle("dark-mode");
-        const enabled = document.body.classList.contains("dark-mode");
-        try {
-            localStorage.setItem(
-                "expenseTrackerDarkMode",
-                enabled ? "enabled" : "disabled"
-            );
-        } catch (error) {
-            console.error("Could not save dark mode preference:", error);
-        }
-        darkModeToggle.textContent =
-            enabled ? "☀️ Light Mode" : "🌙 Dark Mode";
-        drawExpenseChart();
-    });
-}
-/* =========================================
-   INITIALIZE APP
-========================================= */
-if (dateInput && !dateInput.value) {
-    dateInput.value = getTodayDate();
-}
-displayTransactions();
-updateSummary();
-0 commit comments
-Comments
-0
- (0)
-Comment
-You're not receiving notifications from this thread.
-
-There are no files selected for viewing
