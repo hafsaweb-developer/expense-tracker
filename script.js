@@ -1,10 +1,16 @@
-
 /* =========================================
    EXPENSE TRACKER - COMPLETE JAVASCRIPT
 ========================================= */
 
 /* CONNECT HTML ELEMENTS */
 const form = document.getElementById("transactionForm");
+const submitButton = form
+    ? form.querySelector('button[type="submit"]')
+    : null;
+const originalSubmitButtonText = submitButton
+    ? submitButton.textContent
+    : "Add Transaction";
+
 const budgetForm = document.getElementById("budgetForm");
 const monthlyBudgetInput = document.getElementById("monthlyBudget");
 
@@ -55,12 +61,16 @@ function loadTransactions() {
         return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
         console.error("Could not read saved transactions:", error);
-        alert("Your saved transactions could not be read. Please do not clear browser storage.");
+        alert(
+            "Your saved transactions could not be read. " +
+            "Please do not clear browser storage."
+        );
         return [];
     }
 }
 
 let transactions = loadTransactions();
+let editingTransactionId = null;
 
 let monthlyBudget = 0;
 
@@ -119,10 +129,16 @@ function saveTransactions() {
             "expenseTrackerTransactions",
             JSON.stringify(transactions)
         );
+
         return true;
     } catch (error) {
         console.error("Could not save transactions:", error);
-        alert("The browser could not save your changes. Please check available storage.");
+
+        alert(
+            "The browser could not save your changes. " +
+            "Please check available storage."
+        );
+
         return false;
     }
 }
@@ -182,8 +198,10 @@ function updateBudget() {
         budgetStatus.textContent = "No budget set yet";
         budgetProgressBar.style.width = "0%";
         budgetProgressBar.style.backgroundColor = "#6d4aff";
+
         budgetMessage.textContent =
             "Enter your monthly budget to track your spending.";
+
         return;
     }
 
@@ -197,16 +215,22 @@ function updateBudget() {
 
     if (percentage >= 100) {
         budgetProgressBar.style.backgroundColor = "#dc2626";
+
         budgetMessage.textContent =
             `Budget exceeded by ${formatMoney(monthlyExpenses - monthlyBudget)}.`;
+
     } else if (percentage >= 80) {
         budgetProgressBar.style.backgroundColor = "#f59e0b";
+
         budgetMessage.textContent =
             `${percentage.toFixed(1)}% used. You're getting close to your limit!`;
+
     } else {
         budgetProgressBar.style.backgroundColor = "#16a34a";
+
         budgetMessage.textContent =
-            `${percentage.toFixed(1)}% used. ${formatMoney(monthlyBudget - monthlyExpenses)} remaining.`;
+            `${percentage.toFixed(1)}% used. ` +
+            `${formatMoney(monthlyBudget - monthlyExpenses)} remaining.`;
     }
 }
 
@@ -240,7 +264,7 @@ if (budgetForm) {
 
 
 /* =========================================
-   ADD TRANSACTION
+   ADD AND UPDATE TRANSACTION
 ========================================= */
 
 if (form) {
@@ -268,20 +292,79 @@ if (form) {
             return;
         }
 
-        const transaction = {
-            id: Date.now().toString() + Math.random().toString(16).slice(2),
-            description,
-            amount,
-            type,
-            category,
-            date
-        };
+        /*
+          EDIT MODE:
+          Update the existing transaction instead
+          of creating a duplicate.
+        */
 
-        transactions.push(transaction);
+        if (editingTransactionId !== null) {
+            const existingTransaction = transactions.find(
+                item =>
+                    String(item.id) === String(editingTransactionId)
+            );
 
-        if (!saveTransactions()) {
-            transactions.pop();
-            return;
+            if (!existingTransaction) {
+                alert(
+                    "This transaction could not be found. " +
+                    "Please try again."
+                );
+
+                editingTransactionId = null;
+
+                if (submitButton) {
+                    submitButton.textContent = originalSubmitButtonText;
+                }
+
+                return;
+            }
+
+            const previousTransaction = { ...existingTransaction };
+
+            existingTransaction.description = description;
+            existingTransaction.amount = amount;
+            existingTransaction.type = type;
+            existingTransaction.category = category;
+            existingTransaction.date = date;
+
+            if (!saveTransactions()) {
+                Object.assign(
+                    existingTransaction,
+                    previousTransaction
+                );
+
+                return;
+            }
+
+            editingTransactionId = null;
+
+            if (submitButton) {
+                submitButton.textContent = originalSubmitButtonText;
+            }
+
+        } else {
+
+            /*
+              ADD MODE:
+              Create a new transaction as usual.
+            */
+
+            const transaction = {
+                id: Date.now().toString() +
+                    Math.random().toString(16).slice(2),
+                description,
+                amount,
+                type,
+                category,
+                date
+            };
+
+            transactions.push(transaction);
+
+            if (!saveTransactions()) {
+                transactions.pop();
+                return;
+            }
         }
 
         form.reset();
@@ -301,86 +384,24 @@ if (form) {
 ========================================= */
 
 function editTransaction(transaction) {
-    const newDescription = prompt(
-        "Edit description:",
-        transaction.description
-    );
+    editingTransactionId = String(transaction.id);
 
-    if (newDescription === null) return;
+    descriptionInput.value = transaction.description || "";
+    amountInput.value = transaction.amount;
+    typeInput.value = transaction.type;
+    categoryInput.value = transaction.category || "Other";
+    dateInput.value = transaction.date || getTodayDate();
 
-    if (!newDescription.trim()) {
-        alert("Description cannot be empty.");
-        return;
+    if (submitButton) {
+        submitButton.textContent = "Save Changes";
     }
 
-    const newAmountText = prompt(
-        "Edit amount (KSh):",
-        String(transaction.amount)
-    );
+    form.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
 
-    if (newAmountText === null) return;
-
-    const newAmount = Number(newAmountText);
-
-    if (!Number.isFinite(newAmount) || newAmount <= 0) {
-        alert("Enter an amount greater than zero.");
-        return;
-    }
-
-    const newTypeText = prompt(
-        "Enter income or expense:",
-        transaction.type
-    );
-
-    if (newTypeText === null) return;
-
-    const newType = newTypeText.trim().toLowerCase();
-
-    if (!["income", "expense"].includes(newType)) {
-        alert("Type must be income or expense.");
-        return;
-    }
-
-    const newCategoryText = prompt(
-        "Edit category:",
-        transaction.category || "Other"
-    );
-
-    if (newCategoryText === null) return;
-
-    if (!newCategoryText.trim()) {
-        alert("Category cannot be empty.");
-        return;
-    }
-
-    const newDate = prompt(
-        "Edit date (YYYY-MM-DD):",
-        transaction.date || getTodayDate()
-    );
-
-    if (newDate === null) return;
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate.trim()) ||
-        Number.isNaN(Date.parse(newDate.trim() + "T00:00:00"))) {
-        alert("Enter a valid date in YYYY-MM-DD format.");
-        return;
-    }
-
-    const oldTransaction = { ...transaction };
-
-    transaction.description = newDescription.trim();
-    transaction.amount = newAmount;
-    transaction.type = newType;
-    transaction.category = normalizeCategory(newCategoryText);
-    transaction.date = newDate.trim();
-
-    if (!saveTransactions()) {
-        Object.assign(transaction, oldTransaction);
-        return;
-    }
-
-    displayTransactions();
-    updateSummary();
+    descriptionInput.focus();
 }
 
 
@@ -389,7 +410,9 @@ function editTransaction(transaction) {
 ========================================= */
 
 function displayTransactions() {
-    if (!transactionList) return;
+    if (!transactionList) {
+        return;
+    }
 
     transactionList.replaceChildren();
 
@@ -398,10 +421,14 @@ function displayTransactions() {
         : "";
 
     const selectedType = typeFilter ? typeFilter.value : "all";
-    const selectedCategory = categoryFilter ? categoryFilter.value : "all";
+    const selectedCategory = categoryFilter
+        ? categoryFilter.value
+        : "all";
 
     const filtered = transactions.filter(transaction => {
-        const description = String(transaction.description || "").toLowerCase();
+        const description =
+            String(transaction.description || "").toLowerCase();
+
         const category = normalizeCategory(transaction.category);
 
         const matchesSearch =
@@ -409,7 +436,8 @@ function displayTransactions() {
             category.toLowerCase().includes(searchText);
 
         const matchesType =
-            selectedType === "all" || transaction.type === selectedType;
+            selectedType === "all" ||
+            transaction.type === selectedType;
 
         const matchesCategory =
             selectedCategory === "all" ||
@@ -426,6 +454,7 @@ function displayTransactions() {
     if (filtered.length === 0) {
         const message = document.createElement("p");
         message.className = "empty-message";
+
         message.textContent = transactions.length === 0
             ? "No transactions yet. Add your first one!"
             : "No matching transactions found.";
@@ -442,32 +471,47 @@ function displayTransactions() {
         details.className = "transaction-details";
 
         const title = document.createElement("h3");
-        title.textContent = transaction.description || "Untitled transaction";
+        title.textContent =
+            transaction.description || "Untitled transaction";
 
         const info = document.createElement("p");
         info.textContent =
-            `${normalizeCategory(transaction.category)} • ${transaction.date || "No date"}`;
+            `${normalizeCategory(transaction.category)} • ` +
+            `${transaction.date || "No date"}`;
 
         details.append(title, info);
 
         const amount = document.createElement("p");
-        amount.className = transaction.type === "income" ? "income" : "expense";
-        amount.textContent =
-            `${transaction.type === "income" ? "+" : "−"}${formatMoney(transaction.amount)}`;
 
+        amount.className =
+            transaction.type === "income" ? "income" : "expense";
+
+        amount.textContent =
+            `${transaction.type === "income" ? "+" : "−"}` +
+            `${formatMoney(transaction.amount)}`;
+
+        /* EDIT BUTTON */
         const editButton = document.createElement("button");
         editButton.type = "button";
         editButton.className = "edit-button";
         editButton.textContent = "Edit";
-        editButton.addEventListener("click", () => editTransaction(transaction));
 
+        editButton.addEventListener("click", function () {
+            editTransaction(transaction);
+        });
+
+        /* DELETE BUTTON */
         const deleteButton = document.createElement("button");
         deleteButton.type = "button";
         deleteButton.className = "delete-button";
         deleteButton.textContent = "Delete";
 
         deleteButton.addEventListener("click", function () {
-            if (!confirm("Are you sure you want to delete this transaction?")) {
+            if (
+                !confirm(
+                    "Are you sure you want to delete this transaction?"
+                )
+            ) {
                 return;
             }
 
@@ -487,6 +531,7 @@ function displayTransactions() {
         });
 
         item.append(details, amount, editButton, deleteButton);
+
         transactionList.appendChild(item);
     });
 }
@@ -529,7 +574,9 @@ if (downloadReportButton) {
         ];
 
         function escapeCSV(value) {
-            return '"' + String(value ?? "").replace(/"/g, '""') + '"';
+            return '"' +
+                String(value ?? "").replace(/"/g, '""') +
+                '"';
         }
 
         const rows = transactions.map(transaction => [
@@ -555,6 +602,7 @@ if (downloadReportButton) {
 
         link.href = url;
         link.download = "expense-tracker-report.csv";
+
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -569,13 +617,19 @@ if (downloadReportButton) {
 ========================================= */
 
 function drawExpenseChart() {
-    if (!chart || typeof chart.getContext !== "function") return;
+    if (!chart || typeof chart.getContext !== "function") {
+        return;
+    }
 
     const ctx = chart.getContext("2d");
-    if (!ctx) return;
+
+    if (!ctx) {
+        return;
+    }
 
     const width = chart.width;
     const height = chart.height;
+
     const dark = document.body.classList.contains("dark-mode");
     const textColor = dark ? "#f9fafb" : "#374151";
 
@@ -587,8 +641,10 @@ function drawExpenseChart() {
         .filter(transaction => transaction.type === "expense")
         .forEach(transaction => {
             const category = normalizeCategory(transaction.category);
+
             totals[category] =
-                (totals[category] || 0) + Number(transaction.amount || 0);
+                (totals[category] || 0) +
+                Number(transaction.amount || 0);
         });
 
     const categories = Object.keys(totals).sort(
@@ -600,7 +656,12 @@ function drawExpenseChart() {
     ctx.textAlign = "center";
 
     if (categories.length === 0) {
-        ctx.fillText("Add an expense to see your chart.", width / 2, height / 2);
+        ctx.fillText(
+            "Add an expense to see your chart.",
+            width / 2,
+            height / 2
+        );
+
         return;
     }
 
@@ -609,13 +670,16 @@ function drawExpenseChart() {
     const top = 18;
     const barHeight = 25;
     const gap = 15;
+
     const maxBarWidth = width - left - right;
     const maxAmount = Math.max(...Object.values(totals));
 
     categories.forEach((category, index) => {
         const y = top + index * (barHeight + gap);
 
-        if (y + barHeight > height) return;
+        if (y + barHeight > height) {
+            return;
+        }
 
         const barWidth = maxAmount > 0
             ? (totals[category] / maxAmount) * maxBarWidth
@@ -639,6 +703,7 @@ function drawExpenseChart() {
 
         ctx.textAlign = "left";
         ctx.fillStyle = textColor;
+
         ctx.fillText(
             Number(totals[category]).toLocaleString("en-KE"),
             left + maxBarWidth + 8,
@@ -671,11 +736,19 @@ function updateMonthlyHistory() {
 
     const monthExpenses = monthTransactions
         .filter(transaction => transaction.type === "expense")
-        .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0);
+        .reduce(
+            (sum, transaction) =>
+                sum + Number(transaction.amount || 0),
+            0
+        );
 
     const monthIncome = monthTransactions
         .filter(transaction => transaction.type === "income")
-        .reduce((sum, transaction) => sum + Number(transaction.amount || 0), 0);
+        .reduce(
+            (sum, transaction) =>
+                sum + Number(transaction.amount || 0),
+            0
+        );
 
     const difference = monthIncome - monthExpenses;
 
@@ -689,7 +762,11 @@ function updateMonthlyHistory() {
 
 if (historyMonthInput) {
     historyMonthInput.value = getTodayDate().slice(0, 7);
-    historyMonthInput.addEventListener("change", updateMonthlyHistory);
+
+    historyMonthInput.addEventListener(
+        "change",
+        updateMonthlyHistory
+    );
 }
 
 
@@ -715,7 +792,8 @@ if (darkModeToggle) {
     darkModeToggle.addEventListener("click", function () {
         document.body.classList.toggle("dark-mode");
 
-        const enabled = document.body.classList.contains("dark-mode");
+        const enabled =
+            document.body.classList.contains("dark-mode");
 
         try {
             localStorage.setItem(
